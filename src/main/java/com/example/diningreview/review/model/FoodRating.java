@@ -23,10 +23,6 @@ public class FoodRating {
     @JsonIgnore
     private FoodRepository foodRepo;
 
-    public FoodRating(FoodRepository foodRepo) {
-        this.foodRepo = foodRepo;
-    }
-
     @Id
     @GeneratedValue
     @Column(name = "id")

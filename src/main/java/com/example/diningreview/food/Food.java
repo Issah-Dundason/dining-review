@@ -1,12 +1,13 @@
 package com.example.diningreview.food;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Data
 @Entity
+@NoArgsConstructor(force = true)
 @Table(name = "foods")
 public class Food {
 
@@ -15,7 +16,10 @@ public class Food {
     @GeneratedValue
     private Long id;
 
-    @NotBlank
     @Column(name = "name", unique = true)
     private String name;
+
+    public Food(String name) {
+        this.name = name;
+    }
 }

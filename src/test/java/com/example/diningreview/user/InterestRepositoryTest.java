@@ -28,8 +28,8 @@ class InterestRepositoryTest {
         Food food = new Food();
         food.setName("Food1");
 
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
+        User user = new User(null, "User1",
+                "city1", "state1", "1234", "password1", List.of());
 
         food = foodRepo.save(food);
         user = userRepo.save(user);
@@ -53,8 +53,8 @@ class InterestRepositoryTest {
         Food food2 = new Food();
         food2.setName("Food2");
 
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
+        User user = new User(null, "User1",
+                "city1", "state1", "1234", "password1", List.of());
 
         food1 = foodRepo.save(food1);
         food2 = foodRepo.save(food2);

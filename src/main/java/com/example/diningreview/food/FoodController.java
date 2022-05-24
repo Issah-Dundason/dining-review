@@ -15,13 +15,14 @@ public class FoodController {
     }
 
     @PostMapping("/save")
-    public Map<String, Long> save(@Valid @RequestBody Food food) {
-        //return Map.of("id", savedFood.getId());
-        return null;
+    public Map<String, Long> save(@Valid @RequestBody FoodForm form) {
+        Food food = service.save(form);
+        return Map.of("id", food.getId());
     }
 
     @PutMapping("/{id}/update")
-    public void update(@PathVariable Long id,@Valid @RequestBody Food food){
+    public void update(@PathVariable Long id,@Valid @RequestBody FoodForm form){
+        service.update(id, form);
     }
 
 }

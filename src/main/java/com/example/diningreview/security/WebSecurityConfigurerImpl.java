@@ -1,5 +1,6 @@
 package com.example.diningreview.security;
 
+import com.example.diningreview.user.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -29,9 +30,9 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("admin/**")
-                .hasAnyRole("ROLE_ADMIN")
+                .hasAnyRole(Role.ADMIN.name())
                 .antMatchers("user/**","review/**")
-                .hasAnyRole("ROLE_USER")
+                .hasAnyRole(Role.USER.name())
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();

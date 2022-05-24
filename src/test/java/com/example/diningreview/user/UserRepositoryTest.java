@@ -16,8 +16,8 @@ class UserRepositoryTest {
     void canCheckIfUserWithADisplayNameExists() {
         //given
         var nonTakenDisplayName = "any";
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
+        User user = new User(null, "User1",
+                "city1", "state1", "1234", "password1", null);
         underTest.save(user);
         //when
         boolean exists1 = underTest.existsByDisplayName(user.getDisplayName());

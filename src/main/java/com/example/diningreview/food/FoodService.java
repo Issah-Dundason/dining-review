@@ -14,21 +14,23 @@ public class FoodService {
         this.foodRepo = foodRepo;
     }
 
-    public Food save(Food food) {
+    public Food save(FoodForm form) {
         try {
+            Food food = new Food();
+            food.setName(form.getName());
             return foodRepo.save(food);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name already exist.");
         }
     }
 
-    public void update(long id, Food food) {
+    public void update(long id, FoodForm form) {
         Optional<Food> optionalFood = foodRepo.findById(id);
         if(optionalFood.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Food savedFood = optionalFood.get();
-        savedFood.setName(food.getName());
+        savedFood.setName(form.getName());
         foodRepo.save(savedFood);
     }
 }

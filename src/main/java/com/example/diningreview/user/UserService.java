@@ -7,9 +7,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Service
 public class UserService {
     private final UserRepository userRepo;
@@ -27,24 +29,28 @@ public class UserService {
         this.interestRepo = interestRepo;
     }
 
-    public User saveUser (User user) {
-        boolean userExists = userRepo.existsByDisplayName(user.getDisplayName());
+    public User saveUser (UserForm form) {
+        boolean userExists = userRepo.existsByDisplayName(form.getDisplayName());
 
         if(userExists) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exists!");
         }
 
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRoles(List.of("ROLE_USER"));
+        User user = new User();
+        user.setPassword(encoder.encode(form.getPassword()));
+        user.setRoles(List.of(Role.USER.name()));
+        user.setDisplayName(form.getDisplayName());
+        user.setZipCode(form.getZipCode());
+        user.setState(form.getState());
         User savedUser = userRepo.save(user);
 
-        saveInterests(user.getFoodIds(), savedUser);
+        saveInterests(form.getFoodIds(), savedUser);
         return savedUser;
     }
 
-    public void updateUser(User user, String updaterDisplayName) {
+    public void updateUser(UserForm form, String updaterDisplayName) {
 
-        if(!user.getDisplayName().equals(updaterDisplayName)) {
+        if(!form.getDisplayName().equals(updaterDisplayName)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Can't update data of another user!");
         }
@@ -53,13 +59,13 @@ public class UserService {
         interestRepo.deleteAllByUser(savedUser);
 
 
-        savedUser.setCity(user.getCity());
-        savedUser.setZipCode(user.getZipCode());
-        savedUser.setState(user.getState());
-        savedUser.setPassword(encoder.encode(user.getPassword()));
+        savedUser.setCity(form.getCity());
+        savedUser.setZipCode(form.getZipCode());
+        savedUser.setState(form.getState());
+        savedUser.setPassword(encoder.encode(form.getPassword()));
         savedUser = userRepo.save(savedUser);
 
-        saveInterests(user.getFoodIds(), savedUser);
+        saveInterests(form.getFoodIds(), savedUser);
     }
 
     private void saveInterests(Long[] foodIds, User user) {
@@ -72,20 +78,35 @@ public class UserService {
         }
     }
 
-    public User getUser(String displayName) {
+    public User getUser(String displayName, String getterName) {
         boolean userExists = userRepo.existsByDisplayName(displayName);
+
         if(!userExists) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return userRepo.findByDisplayName(displayName).get();
+
+        User user = userRepo.findByDisplayName(displayName).get();
+        User getter = userRepo.findByDisplayName(getterName).get();
+
+
+        if(!displayName.equals(getterName) && !getter.getRoles().contains(Role.ADMIN.name()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        return user;
     }
 
-    public List<Interest> getInterests(String displayName) {
+    public List<Interest> getInterests(String displayName, String getterName) {
         Optional<User> optionalUser = userRepo.findByDisplayName(displayName);
 
         if(optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
+        User user = optionalUser.get();
+        User getter = userRepo.findByDisplayName(getterName).get();
+
+        if(!displayName.equals(getterName) & !getter.getRoles().contains(Role.ADMIN.name()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
         return interestRepo.findByUser(optionalUser.get());
 

@@ -4,7 +4,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -16,19 +15,23 @@ public class UserController {
         this.service = service;
     }
 
+
     @GetMapping("/user/{display-name}")
-    public User getUser(@PathVariable(name = "display-name") String id) {
-        return null;
+    public User getUser(@PathVariable(name = "display-name") String id,
+                        @AuthenticationPrincipal UserDetails details) {
+        return service.getUser(id, details.getUsername());
     }
 
-    @Transactional
     @PutMapping("/user/update")
-    public void updateUser(@Valid @RequestBody User user, @AuthenticationPrincipal UserDetails details) {
+    public void updateUser(@Valid @RequestBody UserForm form,
+                           @AuthenticationPrincipal UserDetails details) {
+        service.updateUser(form, details.getUsername());
     }
 
     @GetMapping("/user/{display-name}/interests")
-    public List<Interest> getInterests(@PathVariable(name = "display-name") String displayName) {
-        return null;
+    public List<Interest> getInterests(@PathVariable(name = "display-name") String displayName,
+                                       @AuthenticationPrincipal UserDetails details) {
+        return service.getInterests(displayName, details.getUsername());
     }
 
 }

@@ -11,6 +11,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -30,19 +33,23 @@ class UserServiceTest {
     @Test
     public void canSaveUser() {
         //given
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
-        user.setFoodIds(new Long[]{1L, 2L, 3L});
+        UserForm form = new UserForm("User1",
+                "city1", "state1", "1234", "password1",
+                new Long[]{1L, 2L, 3L}
+        );
+
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
         //when
-        underTest.saveUser(user);
+        underTest.saveUser(form);
 
         //then
         Mockito.verify(encoder).encode("password1");
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(userRepo).save(argumentCaptor.capture());
         User savedUser = argumentCaptor.getValue();
-        assertThat(savedUser.getRoles()).asList().contains("ROLE_USER");
+        assertThat(savedUser.getDisplayName()).isEqualTo(form.getDisplayName());
+        assertThat(savedUser.getPassword()).isEqualTo(encoder.encode("password1"));
+        assertThat(savedUser.getRoles()).asList().contains(Role.USER.name());
         Mockito.verify(foodRepo).findById(1L);
         Mockito.verify(interestRepo, Mockito.times(3)).save(Mockito.any());
     }
@@ -50,39 +57,39 @@ class UserServiceTest {
     @Test
     public void throwsExceptionWhenSavingExistingUser() {
         //given
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
+        UserForm form = new UserForm("User1",
+                "city1", "state1", "1234", "password1", new Long[] {});
         Mockito.when(userRepo.existsByDisplayName(Mockito.any()))
                 .thenReturn(true);
         //when
         //then
-        assertThatThrownBy(() -> {underTest.saveUser(user);});
+        assertThatThrownBy(() -> {underTest.saveUser(form);});
     }
 
     @Test
     public void preventsOneUserFromUpdatingAnotherUserData() {
         //given
-        User user = new User("User1",
-                "city1", "state1", "1234", "password1");
+        UserForm form = new UserForm("User1",
+                "city1", "state1", "1234", "password1", new Long[]{});
         //when
         //then
-        assertThatThrownBy(() -> {underTest.updateUser(user, "user2");});
+        assertThatThrownBy(() -> {underTest.updateUser(form, "user2");});
     }
 
     @Test
     public void canUpdateUser() {
         //given
-        User newUser = new User("User1",
-                "city1", "state1", "1234", "password1");
+        UserForm form = new UserForm("User1",
+                "city1", "state1", "1234", "password1", new Long[]{1L, 2L, 3L});
 
-        User oldUser = new User("User1",
-                "city2", "state3", "1234", "password5");
+        User oldUser = new User(null, "User1",
+                "city2", "state3", "1234", "password5", null);
 
-        newUser.setFoodIds(new Long[]{1L, 2L, 3L});
+
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
         Mockito.when(userRepo.findByDisplayName(Mockito.any())).thenReturn(java.util.Optional.of(oldUser));
         //when
-        underTest.updateUser(newUser, "User1");
+        underTest.updateUser(form, "User1");
         //then
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(interestRepo).deleteAllByUser(Mockito.any());
@@ -90,8 +97,67 @@ class UserServiceTest {
         Mockito.verify(interestRepo, Mockito.atLeast(1)).save(Mockito.any());
         Mockito.verify(userRepo).save(captor.capture());
         User user = captor.getValue();
-        assertThat(user.getCity()).isEqualTo(newUser.getCity());
-        assertThat(user.getState()).isEqualTo(newUser.getState());
-        assertThat(user.getZipCode()).isEqualTo(newUser.getZipCode());
+        assertThat(user.getCity()).isEqualTo(form.getCity());
+        assertThat(user.getState()).isEqualTo(form.getState());
+        assertThat(user.getZipCode()).isEqualTo(form.getZipCode());
+    }
+
+    @Test
+    public void onlyAdminCanGetAnyUserData() {
+        //given
+        String adminDisplayName = "Admin";
+        String displayName = "user1";
+
+        User admin = new User(null, adminDisplayName, "NONE",
+                "NONE", "NONE", "password", List.of(Role.ADMIN.name(), Role.USER.name()));
+
+        User user = new User();
+
+
+        Mockito.when(userRepo.findByDisplayName(adminDisplayName))
+                .thenReturn(Optional.of(admin));
+        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(user));
+        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
+
+        //when
+        //then
+        underTest.getUser(displayName, adminDisplayName);
+    }
+
+    @Test
+    public void aUserCanGetOnlyOwnedData() {
+        //given
+        String getterName = "User1";
+        User getter = new User();
+        getter.setRoles(List.of(Role.USER.name()));
+
+        String displayName = "User1";
+
+        Mockito.when(userRepo.findByDisplayName(getterName))
+                .thenReturn(Optional.of(getter));
+        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
+        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
+
+        //when then
+        underTest.getUser(displayName, getterName);
+    }
+
+    @Test
+    public void userCanNotGetDataOfDifferentUser() {
+        //given
+        String getterName = "User1";
+        User getter = new User();
+        getter.setRoles(List.of(Role.USER.name()));
+
+        String displayName = "User2";
+
+        Mockito.when(userRepo.findByDisplayName(getterName))
+                .thenReturn(Optional.of(getter));
+        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
+        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
+
+        //when//then
+        assertThatThrownBy(() -> underTest.getUser(displayName, getterName));
+
     }
 }

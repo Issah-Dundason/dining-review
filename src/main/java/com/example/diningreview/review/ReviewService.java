@@ -4,6 +4,7 @@ import com.example.diningreview.food.FoodRepository;
 import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
 import com.example.diningreview.review.model.Review;
+import com.example.diningreview.review.repository.FoodRatingRepository;
 import com.example.diningreview.review.repository.ReviewRepository;
 import com.example.diningreview.user.User;
 import com.example.diningreview.user.UserRepository;
@@ -19,19 +20,21 @@ public class ReviewService {
     private final FoodRepository foodRepo;
     private final RestaurantRepository restaurantRepo;
     private final UserRepository userRepo;
+    private final FoodRatingRepository foodRatingRepo;
 
     public ReviewService(ReviewRepository reviewRepo, FoodRepository foodRepo,
-                         RestaurantRepository restaurantRepo, UserRepository userRepo) {
+                         RestaurantRepository restaurantRepo, UserRepository userRepo, FoodRatingRepository foodRatingRepo) {
         this.reviewRepo = reviewRepo;
         this.foodRepo = foodRepo;
         this.restaurantRepo = restaurantRepo;
         this.userRepo = userRepo;
+        this.foodRatingRepo = foodRatingRepo;
     }
 
-    public Review saveReview(Review review, String displayName) {
+    public Review saveReview(ReviewForm form, String displayName) {
 
         Optional<Restaurant> optionalRestaurant = restaurantRepo
-                .findById(review.getRestaurantId());
+                .findById(form.getRestaurantId());
 
         if(optionalRestaurant.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -39,14 +42,50 @@ public class ReviewService {
 
         User user = userRepo.findByDisplayName(displayName).get();
 
+        Review review = new Review();
+
         review.setUser(user);
         review.setRestaurant(optionalRestaurant.get());
+        review.setCommentary(form.getCommentary());
 
-        review.getFoodRatings().forEach(rating -> {
+        form.getFoodRatings().forEach(rating -> {
             rating.setReview(review);
             rating.setFoodRepo(foodRepo);
         });
 
+        review.setFoodRatings(form.getFoodRatings());
+
         return reviewRepo.save(review);
+    }
+
+    public void updateReview(ReviewForm form,
+                             String updaterDisplayName) {
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepo.findById(form.getRestaurantId());
+        User user = userRepo.findByDisplayName(updaterDisplayName).get();
+
+
+        Restaurant restaurant = optionalRestaurant.orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Restaurant doesn't exist"));
+
+        Optional<Review> optionalReview = reviewRepo.findByRestaurantAndUser(restaurant, user);
+
+        Review review = optionalReview.orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Review does not exist!"));
+
+        foodRatingRepo.deleteAllByReview(review);
+
+        review.setCommentary(form.getCommentary());
+
+        form.getFoodRatings().forEach(rating -> {
+            rating.setReview(review);
+            rating.setFoodRepo(foodRepo);
+        });
+
+        review.setFoodRatings(form.getFoodRatings());
+
+        reviewRepo.save(review);
     }
 }

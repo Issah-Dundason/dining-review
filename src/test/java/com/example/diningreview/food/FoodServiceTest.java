@@ -1,6 +1,5 @@
 package com.example.diningreview.food;
 
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,12 +26,14 @@ class FoodServiceTest {
     @Test
     public void canSaveFood() {
         //given
-        Food food = new Food();
-        food.setName("Food1");
+        FoodForm form = new FoodForm("Food1");
         //when
-        underTest.save(food);
+        underTest.save(form);
         //then
-        Mockito.verify(foodRepo).save(Mockito.any());
+        ArgumentCaptor<Food> captor = ArgumentCaptor.forClass(Food.class);
+        Mockito.verify(foodRepo).save(captor.capture());
+        Food food = captor.getValue();
+        assertThat(food.getName()).isEqualTo(form.getName());
     }
 
     @Test
@@ -41,12 +42,11 @@ class FoodServiceTest {
         Food old = new Food();
         old.setName("Food1");
 
-        Food newFood = new Food();
-        newFood.setName("Food2");
+        FoodForm form = new FoodForm("Food2");
 
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(Optional.of(old));
         //when
-        underTest.update(1l, newFood);
+        underTest.update(1l, form);
         //then
         ArgumentCaptor<Food> captor = ArgumentCaptor.forClass(Food.class);
         Mockito.verify(foodRepo).save(captor.capture());
@@ -57,11 +57,10 @@ class FoodServiceTest {
     @Test
     public void canNotUpdateNonExistentFood() {
         //given
-        Food food = new Food();
-        food.setName("Food1");
+        FoodForm form = new FoodForm("Food1");
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(Optional.empty());
         //when
         //then
-        assertThatThrownBy(() -> underTest.update(1l, food));
+        assertThatThrownBy(() -> underTest.update(1l, form));
     }
 }

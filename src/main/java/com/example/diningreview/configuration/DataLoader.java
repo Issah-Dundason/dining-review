@@ -1,5 +1,6 @@
 package com.example.diningreview.configuration;
 
+import com.example.diningreview.user.Role;
 import com.example.diningreview.user.User;
 import com.example.diningreview.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class DataLoader {
             User user = new User();
             user.setPassword(encoder.encode("adminpassword"));
             user.setDisplayName("Admin");
-            user.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
+            user.setRoles(List.of(Role.ADMIN.name(), Role.USER.name()));
             user.setCity("None");
             user.setState("None");
             userRepository.save(user);

@@ -1,15 +1,19 @@
 package com.example.diningreview.restaurant;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Data
 @Entity
+@NoArgsConstructor(force = true)
 @Table(name = "restaurants")
 public class Restaurant {
 
@@ -18,21 +22,18 @@ public class Restaurant {
     @Column(name = "id")
     private Long id;
 
-    @NotBlank
     @Column(name = "name", unique = true)
     private String name;
 
-    @NotBlank
     @Column(name = "zip_code")
     private String zipCode;
 
-    @NotBlank
     private String city;
 
-    @NotBlank
     private String state;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<RestaurantFood> restaurantFoods = new ArrayList<>();
 
     public void addFood(RestaurantFood restaurantFood) {
@@ -40,7 +41,10 @@ public class Restaurant {
         restaurantFoods.add(restaurantFood);
     }
 
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Long[] foodIds;
+    public Restaurant(String name, String zipCode, String city, String state) {
+        this.name = name;
+        this.zipCode = zipCode;
+        this.city = city;
+        this.state = state;
+    }
 }
