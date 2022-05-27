@@ -71,11 +71,13 @@ public class DataLoader {
             restaurant2.addFood(breadAndEgg);
             restaurant2.addFood(porridge);
             restaurant2.addFood(iceCream);
+            restaurant2 = restaurantRepo.save(restaurant2);
 
             //user
             User user1 = new User("User1", "City1", "State1",
                     "1234", "password1");
             user1.getRoles().add(Role.USER.name());
+            user1.addFood(iceCream);
 
             User user2 = new User("User2", "City2", "State2", "1463", "password2");
             user2.getRoles().add(Role.USER.name());

@@ -1,7 +1,7 @@
 package com.example.diningreview.review.repository;
 
 import com.example.diningreview.restaurant.Restaurant;
-import com.example.diningreview.review.RestaurantFoodScore;
+import com.example.diningreview.review.IRestaurantFoodScore;
 import com.example.diningreview.review.model.Review;
 import com.example.diningreview.review.model.ReviewId;
 import com.example.diningreview.user.User;
@@ -17,9 +17,14 @@ public interface ReviewRepository extends CrudRepository<Review, ReviewId> {
 
     void deleteByRestaurantAndUser(Restaurant restaurant, User user);
 
-    @Query("Select food.name as name, avg (rating.rate) as score, count(rating.rate) as count from Food food" +
-            " join FoodRating  rating on food.id = rating.food.id where rating.review.restaurant.id = ?1 " +
-            "group by food.name")
-    List<RestaurantFoodScore> getFoodScoreForRestaurant(long restaurantId);
+    @Query(
+            value = "select foods.name as name, avg(food_rating.rate) as score, count(food_rating.rate) as count " +
+                    "from foods join food_rating on foods.id =  food_rating.food_id where " +
+                    "food_rating.review_restaurant_id = ?1 group by foods.name",
+            nativeQuery = true
+    )
+    List<IRestaurantFoodScore> getScoreByRestaurant(long restaurantId);
+
+    List<Review> getReviewsByRestaurantId(long id);
 
 }

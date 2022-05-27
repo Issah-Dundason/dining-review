@@ -44,7 +44,7 @@ public class User {
     @JoinTable(name = "user_foods",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "food_id", referencedColumnName = "id"))
-    private List<Food> interestedFoods;
+    private List<Food> interestedFoods = new ArrayList<>();
 
     public void addFood(Food food) {
         interestedFoods.add(food);
