@@ -17,16 +17,13 @@ public class UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder encoder;
     private final FoodRepository foodRepo;
-    private final InterestRepository interestRepo;
 
     public UserService(final UserRepository userRepo,
                        final PasswordEncoder encoder,
-                       final FoodRepository foodRepo,
-                       final InterestRepository interestRepo) {
+                       final FoodRepository foodRepo) {
         this.userRepo = userRepo;
         this.encoder = encoder;
         this.foodRepo = foodRepo;
-        this.interestRepo = interestRepo;
     }
 
     public User saveUser (UserForm form) {
@@ -42,10 +39,9 @@ public class UserService {
         user.setDisplayName(form.getDisplayName());
         user.setZipCode(form.getZipCode());
         user.setState(form.getState());
-        User savedUser = userRepo.save(user);
-
-        saveInterests(form.getFoodIds(), savedUser);
-        return savedUser;
+        user.setCity(form.getCity());
+        saveInterests(form.getFoodIds(), user);
+        return userRepo.save(user);
     }
 
     public void updateUser(UserForm form, String updaterDisplayName) {
@@ -56,22 +52,20 @@ public class UserService {
         }
 
         User savedUser = userRepo.findByDisplayName(updaterDisplayName).get();
-        interestRepo.deleteAllByUser(savedUser);
-
 
         savedUser.setCity(form.getCity());
         savedUser.setZipCode(form.getZipCode());
         savedUser.setState(form.getState());
         savedUser.setPassword(encoder.encode(form.getPassword()));
-        savedUser = userRepo.save(savedUser);
-
         saveInterests(form.getFoodIds(), savedUser);
+
+        //savedUser = userRepo.save(savedUser);
     }
 
     private void saveInterests(Long[] foodIds, User user) {
         for(long foodId : foodIds) {
             Optional<Food> optionalFood = foodRepo.findById(foodId);
-            optionalFood.ifPresentOrElse(food -> interestRepo.save(new Interest(user, food)),
+            optionalFood.ifPresentOrElse(user::addFood,
                     () -> {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Food doesn't exist");
                     });
@@ -93,22 +87,5 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
         return user;
-    }
-
-    public List<Interest> getInterests(String displayName, String getterName) {
-        Optional<User> optionalUser = userRepo.findByDisplayName(displayName);
-
-        if(optionalUser.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
-        User user = optionalUser.get();
-        User getter = userRepo.findByDisplayName(getterName).get();
-
-        if(!displayName.equals(getterName) & !getter.getRoles().contains(Role.ADMIN.name()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-
-        return interestRepo.findByUser(optionalUser.get());
-
     }
 }

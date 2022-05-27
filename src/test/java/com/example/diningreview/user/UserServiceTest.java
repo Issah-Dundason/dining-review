@@ -22,12 +22,11 @@ class UserServiceTest {
     @Mock private UserRepository userRepo;
     @Mock private PasswordEncoder encoder;
     @Mock private FoodRepository foodRepo;
-    @Mock private InterestRepository interestRepo;
     private UserService underTest;
 
     @BeforeEach
     public void setup() {
-        underTest = new UserService(userRepo, encoder, foodRepo, interestRepo);
+        underTest = new UserService(userRepo, encoder, foodRepo);
     }
 
     @Test
@@ -51,7 +50,7 @@ class UserServiceTest {
         assertThat(savedUser.getPassword()).isEqualTo(encoder.encode("password1"));
         assertThat(savedUser.getRoles()).asList().contains(Role.USER.name());
         Mockito.verify(foodRepo).findById(1L);
-        Mockito.verify(interestRepo, Mockito.times(3)).save(Mockito.any());
+        //Mockito.verify(interestRepo, Mockito.times(3)).save(Mockito.any());
     }
 
     @Test
@@ -82,8 +81,8 @@ class UserServiceTest {
         UserForm form = new UserForm("User1",
                 "city1", "state1", "1234", "password1", new Long[]{1L, 2L, 3L});
 
-        User oldUser = new User(null, "User1",
-                "city2", "state3", "1234", "password5", null);
+        User oldUser = new User("User1",
+                "city2", "state3", "1234", "password5");
 
 
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
@@ -92,9 +91,9 @@ class UserServiceTest {
         underTest.updateUser(form, "User1");
         //then
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        Mockito.verify(interestRepo).deleteAllByUser(Mockito.any());
+        //Mockito.verify(interestRepo).deleteAllByUser(Mockito.any());
         Mockito.verify(userRepo).findByDisplayName(Mockito.any());
-        Mockito.verify(interestRepo, Mockito.atLeast(1)).save(Mockito.any());
+        //Mockito.verify(interestRepo, Mockito.atLeast(1)).save(Mockito.any());
         Mockito.verify(userRepo).save(captor.capture());
         User user = captor.getValue();
         assertThat(user.getCity()).isEqualTo(form.getCity());
@@ -108,8 +107,8 @@ class UserServiceTest {
         String adminDisplayName = "Admin";
         String displayName = "user1";
 
-        User admin = new User(null, adminDisplayName, "NONE",
-                "NONE", "NONE", "password", List.of(Role.ADMIN.name(), Role.USER.name()));
+        User admin = new User(adminDisplayName, "NONE",
+                "NONE", "NONE", "password");
 
         User user = new User();
 

@@ -7,27 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class RestaurantService {
     private final RestaurantRepository restaurantRepo;
     private final FoodRepository foodRepo;
-    private final RestaurantFoodRepository restaurantFoodRepo;
 
     @Autowired
     public RestaurantService(RestaurantRepository restaurantRepository,
-                             FoodRepository foodRepository,
-                             RestaurantFoodRepository restaurantFoodRepo) {
+                             FoodRepository foodRepository) {
         this.restaurantRepo = restaurantRepository;
         this.foodRepo = foodRepository;
-        this.restaurantFoodRepo = restaurantFoodRepo;
     }
 
-
     public Restaurant save(RestaurantForm form) {
-        boolean exists = restaurantRepo.existsByNameAndAndZipCode(form.getName(),
+        boolean exists = restaurantRepo.existsByNameAndZipCode(form.getName(),
                 form.getZipCode());
         if(exists) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurant exists");
@@ -39,6 +36,7 @@ public class RestaurantService {
                 form.getCity(),
                 form.getState()
                 );
+
 
         addFood(form, restaurant);
 
@@ -55,30 +53,28 @@ public class RestaurantService {
 
        Optional<Restaurant> optionalRestaurant = restaurantRepo.findById(id);
 
-       Restaurant oldRestaurant = optionalRestaurant.orElseThrow(() ->
+       Restaurant restaurant = optionalRestaurant.orElseThrow(() ->
                new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
-       restaurantFoodRepo.deleteAllByRestaurant(oldRestaurant);
+        restaurant.setName(form.getName());
+        restaurant.setCity(form.getCity());
+        restaurant.setZipCode(form.getZipCode());
+        restaurant.setState(form.getState());
 
-        addFood(form, oldRestaurant);
-        oldRestaurant.setName(form.getName());
-        oldRestaurant.setCity(form.getCity());
-        oldRestaurant.setZipCode(form.getZipCode());
-        oldRestaurant.setState(form.getState());
+        restaurant.getAvailableFood().removeAll(restaurant.getAvailableFood());
 
-        restaurantRepo.save(oldRestaurant);
+        addFood(form, restaurant);
+
+        //restaurantRepo.save(restaurant);
     }
 
-    private void addFood(RestaurantForm form, Restaurant oldRestaurant) {
+    private void addFood(RestaurantForm form, Restaurant restaurant) {
         if(form.getFoodIds() == null) return;
 
         for(long foodId: form.getFoodIds()) {
+
             Optional<Food> optionalFood = foodRepo.findById(foodId);
-            optionalFood.ifPresentOrElse(food -> {
-                        RestaurantFood restaurantFood = new RestaurantFood();
-                        restaurantFood.setFood(food);
-                        oldRestaurant.addFood(restaurantFood);
-                    },
+            optionalFood.ifPresentOrElse(restaurant::addFood,
                     () -> {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Food doesn't exist");
                     });

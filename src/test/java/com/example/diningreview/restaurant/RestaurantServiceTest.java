@@ -18,15 +18,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class RestaurantServiceTest {
     @Mock private RestaurantRepository restaurantRepo;
     @Mock private FoodRepository foodRepo;
-    @Mock private RestaurantFoodRepository restaurantFoodRepo;
     private RestaurantService underTest;
 
     @BeforeEach
     public void setup() {
         underTest = new RestaurantService(
                 restaurantRepo,
-                foodRepo,
-                restaurantFoodRepo);
+                foodRepo);
     }
 
     @Test
@@ -45,8 +43,6 @@ class RestaurantServiceTest {
         //then
         ArgumentCaptor<Restaurant> captor = ArgumentCaptor.forClass(Restaurant.class);
         Mockito.verify(restaurantRepo).save(captor.capture());
-        RestaurantFood resFood = captor.getValue().getRestaurantFoods().get(0);
-        assertThat(resFood.getFood().getName()).isEqualTo("food");
     }
 
     @Test
@@ -76,14 +72,12 @@ class RestaurantServiceTest {
         //then
         Mockito.verify(restaurantRepo).findById(1l);
         Mockito.verify(foodRepo).findById(1l);
-        Mockito.verify(restaurantFoodRepo).deleteAllByRestaurant(savedRestaurant);
         ArgumentCaptor<Restaurant> captor = ArgumentCaptor.forClass(Restaurant.class);
         Mockito.verify(restaurantRepo).save(captor.capture());
         Restaurant restaurant = captor.getValue();
         assertThat(restaurant.getName()).isEqualTo(form.getName());
         assertThat(restaurant.getZipCode()).isEqualTo(form.getZipCode());
         assertThat(restaurant.getState()).isEqualTo(form.getState());
-        assertThat(restaurant.getRestaurantFoods()).asList().size().isEqualTo(1);
     }
 
 

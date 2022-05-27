@@ -17,41 +17,24 @@ class RestaurantRepositoryTest {
     @Autowired
     private RestaurantRepository underTest;
 
+
     @Autowired
     private FoodRepository foodRepo;
 
     @Test
     public void shouldSaveRestaurantAndItFood() {
         //given
-        Food food1 = new Food();
-        food1.setName("Food1");
-
-        Food food2 = new Food();
-        food2.setName("Food2");
-
+        Food food1 = new Food("Food1");
+        Food food2 = new Food("Food2");
         food1 = foodRepo.save(food1);
         food2 = foodRepo.save(food2);
 
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("res1");
-        restaurant.setZipCode("1234");
-
-        RestaurantFood resFood = new RestaurantFood();
-        resFood.setFood(food1);
-        restaurant.addFood(resFood);
-
-        resFood = new RestaurantFood();
-        resFood.setFood(food2);
-        restaurant.addFood(resFood);
+        Restaurant restaurant = new Restaurant("Restaurant1", "1234", "City1", "state1");
 
         //when
         restaurant = underTest.save(restaurant);
+        restaurant = underTest.findById(restaurant.getId()).get();
         //then
-        List<String> servedFood = restaurant.getRestaurantFoods().stream()
-                .map(served -> served.getFood().getName())
-                .collect(Collectors.toList());
-        assertThat(servedFood).asList().contains("Food1", "Food2");
-
     }
 
     @Test
@@ -65,7 +48,7 @@ class RestaurantRepositoryTest {
         underTest.save(restaurant);
         //when
         //then
-        assertThat(underTest.existsByNameAndAndZipCode("res1", "1234")).isTrue();
+        assertThat(underTest.existsByNameAndZipCode("res1", "1234")).isTrue();
     }
 
     @Test
@@ -91,7 +74,7 @@ class RestaurantRepositoryTest {
         restaurant.setZipCode("1234");
         restaurant.setState("state1");
         restaurant.setCity("city1");
-        restaurant = underTest.save(restaurant);
+        underTest.save(restaurant);
         //when
         boolean exists = underTest.existsByNameAndIdIsNotAndStateIsAndCityIs("res1",
                 80l, "state1", "city1");

@@ -1,10 +1,8 @@
 package com.example.diningreview.restaurant;
 
-import lombok.AllArgsConstructor;
+import com.example.diningreview.food.Food;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -28,17 +26,26 @@ public class Restaurant {
     @Column(name = "zip_code")
     private String zipCode;
 
+    @Column(name = "city")
     private String city;
 
+    @Column(name = "state")
     private String state;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<RestaurantFood> restaurantFoods = new ArrayList<>();
 
-    public void addFood(RestaurantFood restaurantFood) {
-        restaurantFood.setRestaurant(this);
-        restaurantFoods.add(restaurantFood);
+    @ManyToMany
+    @JoinTable(name = "restaurant_foods",
+            joinColumns = @JoinColumn(name = "restaurant_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "food_id", referencedColumnName = "id")
+    )
+    List<Food> availableFood = new ArrayList<>();
+
+    public void addFood(Food food) {
+        availableFood.add(food);
+    }
+
+    public void removeFood(Food food) {
+        availableFood.remove(food);
     }
 
     public Restaurant(String name, String zipCode, String city, String state) {

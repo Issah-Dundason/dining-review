@@ -2,7 +2,6 @@ package com.example.diningreview.restaurant;
 
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 
 @RestController
@@ -14,14 +13,12 @@ public class RestaurantController {
         this.service = service;
     }
 
-    @Transactional
     @PostMapping("/save")
     public Map<String, Long> save(@RequestBody RestaurantForm form) {
         Restaurant restaurant = service.save(form);
         return Map.of("id", restaurant.getId());
     }
 
-    @Transactional
     @PutMapping("/{id}/update")
     public void update(@PathVariable Long id, @RequestBody RestaurantForm form) {
         service.update(id, form);

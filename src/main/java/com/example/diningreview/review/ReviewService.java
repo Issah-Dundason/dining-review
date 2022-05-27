@@ -23,7 +23,8 @@ public class ReviewService {
     private final FoodRatingRepository foodRatingRepo;
 
     public ReviewService(ReviewRepository reviewRepo, FoodRepository foodRepo,
-                         RestaurantRepository restaurantRepo, UserRepository userRepo, FoodRatingRepository foodRatingRepo) {
+                         RestaurantRepository restaurantRepo,
+                         UserRepository userRepo, FoodRatingRepository foodRatingRepo) {
         this.reviewRepo = reviewRepo;
         this.foodRepo = foodRepo;
         this.restaurantRepo = restaurantRepo;
@@ -45,15 +46,22 @@ public class ReviewService {
         Review review = new Review();
 
         review.setUser(user);
-        review.setRestaurant(optionalRestaurant.get());
+        Restaurant restaurant = optionalRestaurant.get();
+        review.setRestaurant(restaurant);
         review.setCommentary(form.getCommentary());
 
-        form.getFoodRatings().forEach(rating -> {
-            rating.setReview(review);
-            rating.setFoodRepo(foodRepo);
-        });
+//        form.getFoodRatings().forEach(rating -> {
+//            boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
+//                    rating.getFoodId());
+//            if(!foodBelongsToRestaurant) {
+//                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+//                        String.format("Restaurant doesn't have food with id %d", rating.getFoodId()));
+//            }
+//            rating.setReview(review);
+//            rating.setFoodRepo(foodRepo);
+//        });
 
-        review.setFoodRatings(form.getFoodRatings());
+        ///review.setFoodRatings(form.getFoodRatings());
 
         return reviewRepo.save(review);
     }
@@ -79,12 +87,19 @@ public class ReviewService {
 
         review.setCommentary(form.getCommentary());
 
-        form.getFoodRatings().forEach(rating -> {
-            rating.setReview(review);
-            rating.setFoodRepo(foodRepo);
-        });
 
-        review.setFoodRatings(form.getFoodRatings());
+
+//        form.getFoodRatings().forEach(rating -> {
+//            boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
+//                    rating.getFoodId());
+//            if(!foodBelongsToRestaurant) {
+//                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+//                        String.format("Restaurant doesn't have food with id %d", rating.getFoodId()));
+//            }
+//            rating.setReview(review);
+//            rating.setFoodRepo(foodRepo);
+//        });
+//        review.setFoodRatings(form.getFoodRatings());
 
         reviewRepo.save(review);
     }

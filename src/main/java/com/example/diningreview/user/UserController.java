@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class UserController {
@@ -28,10 +27,5 @@ public class UserController {
         service.updateUser(form, details.getUsername());
     }
 
-    @GetMapping("/user/{display-name}/interests")
-    public List<Interest> getInterests(@PathVariable(name = "display-name") String displayName,
-                                       @AuthenticationPrincipal UserDetails details) {
-        return service.getInterests(displayName, details.getUsername());
-    }
 
 }

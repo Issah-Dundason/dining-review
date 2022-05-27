@@ -1,7 +1,6 @@
 package com.example.diningreview.review;
 
 
-import com.example.diningreview.review.model.FoodRating;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -20,7 +19,6 @@ public class ReviewForm {
     @Min(1)
     private Long restaurantId;
 
-
     @NotEmpty
-    private List<FoodRating> foodRatings = new ArrayList<>();
+    private List<FoodRatingForm> foodRatings = new ArrayList<>();
 }

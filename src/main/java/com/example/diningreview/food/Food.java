@@ -22,4 +22,5 @@ public class Food {
     public Food(String name) {
         this.name = name;
     }
+
 }
