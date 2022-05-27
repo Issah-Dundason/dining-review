@@ -58,10 +58,9 @@ public class UserService {
         savedUser.setZipCode(form.getZipCode());
         savedUser.setState(form.getState());
         savedUser.setPassword(encoder.encode(form.getPassword()));
-        saveInterests(form.getFoodIds(), savedUser);
         savedUser.getInterestedFoods().removeAll(savedUser.getInterestedFoods());
-
-        //savedUser = userRepo.save(savedUser);
+        saveInterests(form.getFoodIds(), savedUser);
+        userRepo.save(savedUser);
     }
 
     private void saveInterests(Long[] foodIds, User user) {

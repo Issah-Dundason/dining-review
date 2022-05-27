@@ -50,7 +50,6 @@ class UserServiceTest {
         assertThat(savedUser.getPassword()).isEqualTo(encoder.encode("password1"));
         assertThat(savedUser.getRoles()).asList().contains(Role.USER.name());
         Mockito.verify(foodRepo).findById(1L);
-        //Mockito.verify(interestRepo, Mockito.times(3)).save(Mockito.any());
     }
 
     @Test
@@ -81,24 +80,23 @@ class UserServiceTest {
         UserForm form = new UserForm("User1",
                 "city1", "state1", "1234", "password1", new Long[]{1L, 2L, 3L});
 
-        User oldUser = new User("User1",
+        User toBeSaved = new User("User1",
                 "city2", "state3", "1234", "password5");
 
 
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
-        Mockito.when(userRepo.findByDisplayName(Mockito.any())).thenReturn(java.util.Optional.of(oldUser));
+        Mockito.when(userRepo.findByDisplayName(Mockito.any())).thenReturn(java.util.Optional.of(toBeSaved));
         //when
         underTest.updateUser(form, "User1");
         //then
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        //Mockito.verify(interestRepo).deleteAllByUser(Mockito.any());
         Mockito.verify(userRepo).findByDisplayName(Mockito.any());
-        //Mockito.verify(interestRepo, Mockito.atLeast(1)).save(Mockito.any());
         Mockito.verify(userRepo).save(captor.capture());
         User user = captor.getValue();
         assertThat(user.getCity()).isEqualTo(form.getCity());
         assertThat(user.getState()).isEqualTo(form.getState());
         assertThat(user.getZipCode()).isEqualTo(form.getZipCode());
+        assertThat(user.getInterestedFoods().size()).isEqualTo(3);
     }
 
     @Test
@@ -109,6 +107,7 @@ class UserServiceTest {
 
         User admin = new User(adminDisplayName, "NONE",
                 "NONE", "NONE", "password");
+        admin.setRoles(List.of(Role.ADMIN.name()));
 
         User user = new User();
 
