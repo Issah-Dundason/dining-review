@@ -15,19 +15,16 @@ public class ReviewController {
         this.service = service;
     }
 
-
     @PostMapping("/save")
     public Review save(@RequestBody ReviewForm form,
                        @AuthenticationPrincipal UserDetails details) {
-        return null;
+        return service.saveReview(form, details.getUsername());
     }
 
-
-    @PutMapping("{displayName}/{restaurantId}/update")
-    public void update(@PathVariable String displayName,
-            @PathVariable long restaurantId,
-            @RequestBody ReviewForm form,
+    @PutMapping("update")
+    public void update (@RequestBody ReviewForm form,
                        @AuthenticationPrincipal UserDetails details) {
+        service.updateReview(form, details.getUsername());
     }
 
 }

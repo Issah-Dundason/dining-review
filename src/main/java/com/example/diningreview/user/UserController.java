@@ -27,5 +27,4 @@ public class UserController {
         service.updateUser(form, details.getUsername());
     }
 
-
 }

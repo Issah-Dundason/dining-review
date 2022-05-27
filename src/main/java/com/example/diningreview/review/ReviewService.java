@@ -1,8 +1,10 @@
 package com.example.diningreview.review;
 
+import com.example.diningreview.food.Food;
 import com.example.diningreview.food.FoodRepository;
 import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
+import com.example.diningreview.review.model.FoodRating;
 import com.example.diningreview.review.model.Review;
 import com.example.diningreview.review.repository.FoodRatingRepository;
 import com.example.diningreview.review.repository.ReviewRepository;
@@ -42,29 +44,14 @@ public class ReviewService {
         }
 
         User user = userRepo.findByDisplayName(displayName).get();
-        Review review = new Review(optionalRestaurant.get(), user, form.getCommentary());
+        Restaurant restaurant = optionalRestaurant.get();
+        Review review = new Review(restaurant, user, form.getCommentary());
 
-        form.getFoodRatings().forEach(ratingForm -> {
-           // boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
-           //        rating.getFoodId());
-        });
-
-
-//        form.getFoodRatings().forEach(rating -> {
-//            boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
-//                    rating.getFoodId());
-//            if(!foodBelongsToRestaurant) {
-//                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-//                        String.format("Restaurant doesn't have food with id %d", rating.getFoodId()));
-//            }
-//            rating.setReview(review);
-//            rating.setFoodRepo(foodRepo);
-//        });
-
-        ///review.setFoodRatings(form.getFoodRatings());
+        addReviewRating(form, restaurant, review);
 
         return reviewRepo.save(review);
     }
+
 
     public void updateReview(ReviewForm form,
                              String updaterDisplayName) {
@@ -84,21 +71,23 @@ public class ReviewService {
                         "Review does not exist!"));
 
         review.setCommentary(form.getCommentary());
+        review.getFoodRatings().removeAll(review.getFoodRatings());
 
-
-
-//        form.getFoodRatings().forEach(rating -> {
-//            boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
-//                    rating.getFoodId());
-//            if(!foodBelongsToRestaurant) {
-//                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-//                        String.format("Restaurant doesn't have food with id %d", rating.getFoodId()));
-//            }
-//            rating.setReview(review);
-//            rating.setFoodRepo(foodRepo);
-//        });
-//        review.setFoodRatings(form.getFoodRatings());
+        addReviewRating(form,restaurant,review);
 
         reviewRepo.save(review);
+    }
+
+    private void addReviewRating(ReviewForm form, Restaurant restaurant, Review review) {
+        form.getFoodRatings().forEach(ratingForm -> {
+            boolean foodAvailableAtRestaurant = restaurantRepo.restaurantHasFood(ratingForm.getFoodId()
+                    , restaurant.getId());
+            if(!foodAvailableAtRestaurant) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Restaurant doesn't have food with id %d", ratingForm.getFoodId()));
+            }
+            Food food = foodRepo.findById(ratingForm.getFoodId()).get();
+            review.addFoodRating(new FoodRating(food, ratingForm.getRate()));
+        });
     }
 }
