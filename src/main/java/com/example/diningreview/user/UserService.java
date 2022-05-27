@@ -11,8 +11,9 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Transactional
+
 @Service
+@Transactional
 public class UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder encoder;
@@ -58,6 +59,7 @@ public class UserService {
         savedUser.setState(form.getState());
         savedUser.setPassword(encoder.encode(form.getPassword()));
         saveInterests(form.getFoodIds(), savedUser);
+        savedUser.getInterestedFoods().removeAll(savedUser.getInterestedFoods());
 
         //savedUser = userRepo.save(savedUser);
     }

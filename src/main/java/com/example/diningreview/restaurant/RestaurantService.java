@@ -65,14 +65,13 @@ public class RestaurantService {
 
         addFood(form, restaurant);
 
-        //restaurantRepo.save(restaurant);
+        restaurantRepo.save(restaurant);
     }
 
     private void addFood(RestaurantForm form, Restaurant restaurant) {
         if(form.getFoodIds() == null) return;
 
         for(long foodId: form.getFoodIds()) {
-
             Optional<Food> optionalFood = foodRepo.findById(foodId);
             optionalFood.ifPresentOrElse(restaurant::addFood,
                     () -> {

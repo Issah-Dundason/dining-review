@@ -22,7 +22,7 @@ class RestaurantRepositoryTest {
     private FoodRepository foodRepo;
 
     @Test
-    public void shouldSaveRestaurantAndItFood() {
+    public void canSaveRestaurantAndFoodAvailable() {
         //given
         Food food1 = new Food("Food1");
         Food food2 = new Food("Food2");
@@ -30,54 +30,53 @@ class RestaurantRepositoryTest {
         food2 = foodRepo.save(food2);
 
         Restaurant restaurant = new Restaurant("Restaurant1", "1234", "City1", "state1");
+        restaurant.addFood(food1);
+        restaurant.addFood(food2);
 
         //when
         restaurant = underTest.save(restaurant);
-        restaurant = underTest.findById(restaurant.getId()).get();
         //then
+        assertThat(restaurant.getAvailableFood()).asList().contains(food1, food2);
     }
 
     @Test
     public void canCheckRestaurantExistsWithNameAndZipCode() {
         //given
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("res1");
-        restaurant.setZipCode("1234");
-        restaurant.setState("state1");
-        restaurant.setCity("city1");
+        Restaurant restaurant = new Restaurant("res1", "1234", "state1", "city1");
         underTest.save(restaurant);
         //when
         //then
         assertThat(underTest.existsByNameAndZipCode("res1", "1234")).isTrue();
     }
 
+
     @Test
-    public void canCheckRestaurantWithoutButSameNameExist() {
+    public void checkRestaurantInTheSameCityAndStateHasSameName() {
         //given
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("res1");
-        restaurant.setZipCode("1234");
-        restaurant.setState("state1");
-        restaurant.setCity("city1");
+        Restaurant restaurant = new Restaurant("res1", "1234", "state1", "city1");
         restaurant = underTest.save(restaurant);
+
         //when
+        boolean exists = underTest.existsByNameAndIdIsNotAndStateIsAndCityIs("res1",
+                restaurant.getId() * 3, restaurant.getState(), restaurant.getCity());
         //then
-        assertThat(underTest.existsByNameAndIdIsNot("res1", 80l)).isTrue();
-        assertThat(underTest.existsByNameAndIdIsNot("res1", restaurant.getId())).isFalse();
+        assertThat(exists).isTrue();
     }
 
     @Test
-    public void checkTwoRestaurantsInCityHasSameName() {
+    public void canCheckRestaurantWithIDPreparesACertainFood() {
         //given
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("res1");
-        restaurant.setZipCode("1234");
-        restaurant.setState("state1");
-        restaurant.setCity("city1");
-        underTest.save(restaurant);
+        Food food1 = new Food("Food1");
+        Food food2 = new Food("Food2");
+        food1 = foodRepo.save(food1);
+        food2 = foodRepo.save(food2);
+
+        Restaurant restaurant = new Restaurant("Restaurant1", "1234", "City1", "state1");
+        restaurant.addFood(food1);
+        restaurant.addFood(food2);
+        restaurant = underTest.save(restaurant);
         //when
-        boolean exists = underTest.existsByNameAndIdIsNotAndStateIsAndCityIs("res1",
-                80l, "state1", "city1");
+        boolean exists = underTest.restaurantHasFood(food1.getId(), restaurant.getId());
         //then
         assertThat(exists).isTrue();
     }

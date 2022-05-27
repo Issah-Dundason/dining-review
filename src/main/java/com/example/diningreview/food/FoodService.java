@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class FoodService {
     private final FoodRepository foodRepo;
 
@@ -31,6 +33,5 @@ public class FoodService {
         }
         Food savedFood = optionalFood.get();
         savedFood.setName(form.getName());
-        foodRepo.save(savedFood);
     }
 }

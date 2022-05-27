@@ -12,24 +12,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ReviewService {
     private final ReviewRepository reviewRepo;
     private final FoodRepository foodRepo;
     private final RestaurantRepository restaurantRepo;
     private final UserRepository userRepo;
-    private final FoodRatingRepository foodRatingRepo;
 
     public ReviewService(ReviewRepository reviewRepo, FoodRepository foodRepo,
                          RestaurantRepository restaurantRepo,
-                         UserRepository userRepo, FoodRatingRepository foodRatingRepo) {
+                         UserRepository userRepo) {
         this.reviewRepo = reviewRepo;
         this.foodRepo = foodRepo;
         this.restaurantRepo = restaurantRepo;
         this.userRepo = userRepo;
-        this.foodRatingRepo = foodRatingRepo;
     }
 
     public Review saveReview(ReviewForm form, String displayName) {
@@ -42,13 +42,13 @@ public class ReviewService {
         }
 
         User user = userRepo.findByDisplayName(displayName).get();
+        Review review = new Review(optionalRestaurant.get(), user, form.getCommentary());
 
-        Review review = new Review();
+        form.getFoodRatings().forEach(ratingForm -> {
+           // boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
+           //        rating.getFoodId());
+        });
 
-        review.setUser(user);
-        Restaurant restaurant = optionalRestaurant.get();
-        review.setRestaurant(restaurant);
-        review.setCommentary(form.getCommentary());
 
 //        form.getFoodRatings().forEach(rating -> {
 //            boolean foodBelongsToRestaurant = restaurantFoodRepo.restaurantWithIdHasFoodWithId(restaurant.getId(),
@@ -82,8 +82,6 @@ public class ReviewService {
         Review review = optionalReview.orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Review does not exist!"));
-
-        foodRatingRepo.deleteAllByReview(review);
 
         review.setCommentary(form.getCommentary());
 
