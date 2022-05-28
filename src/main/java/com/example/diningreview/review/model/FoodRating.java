@@ -1,6 +1,7 @@
 package com.example.diningreview.review.model;
 
 import com.example.diningreview.food.Food;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,12 @@ public class FoodRating {
     @ManyToOne
     private Food food;
 
+    @JsonIgnore
     @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "restaurant_id"),
+            @JoinColumn(name = "user_id")
+    })
     private Review review;
 
 

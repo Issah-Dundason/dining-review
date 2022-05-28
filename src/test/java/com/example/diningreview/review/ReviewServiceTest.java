@@ -20,12 +20,13 @@ class ReviewServiceTest {
     @Mock private FoodRepository foodRepo;
     @Mock private RestaurantRepository restaurantRepo;
     @Mock private UserRepository userRepo;
+    @Mock private FoodRatingRepository foodRatingRepo;
     private ReviewService underTest;
 
     @BeforeEach
     public void setup() {
         underTest = new ReviewService(reviewRepo,
-                foodRepo, restaurantRepo, userRepo);
+                foodRepo, restaurantRepo, userRepo, foodRatingRepo);
     }
 
     @Test

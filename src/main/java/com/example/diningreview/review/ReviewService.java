@@ -24,14 +24,16 @@ public class ReviewService {
     private final FoodRepository foodRepo;
     private final RestaurantRepository restaurantRepo;
     private final UserRepository userRepo;
+    private final FoodRatingRepository foodRatingRepo;
 
     public ReviewService(ReviewRepository reviewRepo, FoodRepository foodRepo,
                          RestaurantRepository restaurantRepo,
-                         UserRepository userRepo) {
+                         UserRepository userRepo, FoodRatingRepository foodRatingRepo) {
         this.reviewRepo = reviewRepo;
         this.foodRepo = foodRepo;
         this.restaurantRepo = restaurantRepo;
         this.userRepo = userRepo;
+        this.foodRatingRepo = foodRatingRepo;
     }
 
     public Review saveReview(ReviewForm form, String displayName) {
@@ -71,7 +73,7 @@ public class ReviewService {
                         "Review does not exist!"));
 
         review.setCommentary(form.getCommentary());
-        review.getFoodRatings().removeAll(review.getFoodRatings());
+        foodRatingRepo.deleteAllByReview(review);
 
         addReviewRating(form,restaurant,review);
 

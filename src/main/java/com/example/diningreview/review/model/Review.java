@@ -4,6 +4,8 @@ import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -33,21 +35,13 @@ public class Review {
     @Enumerated
     private ReviewStatus reviewStatus = ReviewStatus.PENDING;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumns({
-            @JoinColumn(name = "restaurant_id"),
-            @JoinColumn(name = "user_id")
-    })
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "review")
+    @LazyCollection(value = LazyCollectionOption.FALSE)
     private List<FoodRating> foodRatings = new ArrayList<>();
 
     public void addFoodRating(FoodRating foodRating) {
         foodRating.setReview(this);
         foodRatings.add(foodRating);
-    }
-
-    public void removeFoodRating(FoodRating foodRating) {
-        foodRatings.remove(foodRating);
-        foodRating.setReview(null);
     }
 
     public Review(Restaurant restaurant, User user, String commentary) {

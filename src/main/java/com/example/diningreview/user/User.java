@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -44,7 +46,7 @@ public class User {
     @JoinTable(name = "user_foods",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "food_id", referencedColumnName = "id"))
-    private List<Food> interestedFoods = new ArrayList<>();
+    private Set<Food> interestedFoods = new HashSet<>();
 
     public void addFood(Food food) {
         interestedFoods.add(food);

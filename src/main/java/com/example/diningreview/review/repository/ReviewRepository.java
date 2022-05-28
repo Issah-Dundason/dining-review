@@ -20,7 +20,7 @@ public interface ReviewRepository extends CrudRepository<Review, ReviewId> {
     @Query(
             value = "select foods.name as name, avg(food_rating.rate) as score, count(food_rating.rate) as count " +
                     "from foods join food_rating on foods.id =  food_rating.food_id where " +
-                    "food_rating.review_restaurant_id = ?1 group by foods.name",
+                    "food_rating.restaurant_id = ?1 group by foods.name",
             nativeQuery = true
     )
     List<IRestaurantFoodScore> getScoreByRestaurant(long restaurantId);
