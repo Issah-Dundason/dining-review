@@ -18,14 +18,14 @@ A restaurant will also have an overall score, which will be the average across a
 - [x] Update a restaurant
 - [x] Create food
 - [x] Update food
-- [-]  Change the status of a review (pending to approved or pending to rejected)
+- [ ]  Change the status of a review (pending to approved or pending to rejected)
 
 
 ### User
 - [x] Register
 - [x] Update data
 - [x] Rate the food served by a restaurant
-- [-] Delete a Review
+- [ ] Delete a Review
 
 ### Endpoints
 
