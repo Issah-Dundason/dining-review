@@ -1,7 +1,6 @@
 package com.example.diningreview.restaurant;
 
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
 @RestController
