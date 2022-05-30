@@ -6,6 +6,7 @@ import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
 import com.example.diningreview.review.model.FoodRating;
 import com.example.diningreview.review.model.Review;
+import com.example.diningreview.review.model.ReviewStatus;
 import com.example.diningreview.review.repository.FoodRatingRepository;
 import com.example.diningreview.review.repository.ReviewRepository;
 import com.example.diningreview.user.User;
@@ -91,5 +92,23 @@ public class ReviewService {
             Food food = foodRepo.findById(ratingForm.getFoodId()).get();
             review.addFoodRating(new FoodRating(food, ratingForm.getRate()));
         });
+    }
+
+    public void changeReviewStatus(ReviewStatusUpdateForm form) {
+
+        User user = userRepo.findByDisplayName(form.getUserDisplayName()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+        Restaurant restaurant = restaurantRepo.findById(form.getRestaurantId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant does not exist"));
+        Review review = reviewRepo.findByRestaurantAndUser(restaurant, user).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Review does not exist"));
+
+        if(form.getStatus() < 0 || form.getStatus() > ReviewStatus.values().length) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        review.setReviewStatus(ReviewStatus.values()[form.getStatus()]);
+
+        reviewRepo.save(review);
     }
 }

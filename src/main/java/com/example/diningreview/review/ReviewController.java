@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/review")
 public class ReviewController {
     private final ReviewService service;
 
@@ -15,16 +14,21 @@ public class ReviewController {
         this.service = service;
     }
 
-    @PostMapping("/save")
+    @PostMapping("/review/save")
     public Review save(@RequestBody ReviewForm form,
                        @AuthenticationPrincipal UserDetails details) {
         return service.saveReview(form, details.getUsername());
     }
 
-    @PutMapping("update")
+    @PutMapping("/review/update")
     public void update (@RequestBody ReviewForm form,
                        @AuthenticationPrincipal UserDetails details) {
         service.updateReview(form, details.getUsername());
+    }
+
+    @PutMapping("/admin/review/status/update")
+    public void updateReviewStatus(@RequestBody ReviewStatusUpdateForm form) {
+        service.changeReviewStatus(form);
     }
 
 }

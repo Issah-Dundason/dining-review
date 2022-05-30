@@ -42,7 +42,7 @@ A restaurant will also have an overall score, which will be the average across a
 | GET  | http://\<HOST\>\:\<PORT\>/user/{{display-name}}  | ✅  |   | Returns a json object with the supplied display name  |
 |POST   |http://\<HOST\>\:\<PORT\>/review/save | ✅  |  A json object with the details | Returns the saved review  |
 | PUT  |  http://\<HOST\>\:\<PORT\>/review/update | ✅ |A json object representing a review.    |   |
-| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the score(its rating on a scale of 1 - 5) and the number of users who have took part in rating the food  |
+| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the score(its rating on a scale of 1 - 5) and the number of users who took part in rating the food  |
 
 ### Example
 
