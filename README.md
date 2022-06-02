@@ -6,7 +6,7 @@ The app deals with the ff entities:
 - Restaurant
 - Food
 
-A Restaurant will have a list of food. Each food will be rated by users on a scale of 1 - 5, with 5 being the best. The score of a food for a particular restaurant is the average of all submitted scores for that food.
+A Restaurant will have a list of food. Each food will be rated by users on a scale of 1 - 5, with 5 being the best. The score of a particular food served by a particular restaurant is the average of all submitted scores for that food.
 
 A restaurant will also have an overall score, which will be the average across all the submitted scores across all the foods for that restaurant.
 
@@ -18,7 +18,7 @@ A restaurant will also have an overall score, which will be the average across a
 - [x] Update a restaurant
 - [x] Create food
 - [x] Update food
-- [ ]  Change the status of a review (pending to approved or pending to rejected)
+- [x]  Change the status of a review (pending to approved or pending to rejected)
 
 
 ### User
