@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Base64;
 import java.util.List;
 
 @Component

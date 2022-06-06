@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,9 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtil {
@@ -32,6 +36,10 @@ public class JwtTokenUtil {
     public String generateToken(Authentication authentication) {
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         LocalDateTime date = LocalDateTime.now();
+
+        List<String> authorities = principal.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+
         LocalDateTime datePlus = date.plusHours(jwtExpirationTimeInHrs);
 
         Date expiryDate = Date.from(datePlus.atZone(ZoneId.systemDefault()).toInstant());
@@ -42,6 +50,7 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .setSubject(principal.getUsername())
                 .setIssuedAt(new Date())
+                .addClaims(Map.of("roles", authorities))
                 .setExpiration(expiryDate)
                 .signWith(hmacKey)
                 .compact();

@@ -33,5 +33,6 @@ public class FoodService {
         }
         Food savedFood = optionalFood.get();
         savedFood.setName(form.getName());
+        foodRepo.save(savedFood);
     }
 }

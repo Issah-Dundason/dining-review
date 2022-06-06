@@ -6,6 +6,7 @@ import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
 import com.example.diningreview.review.model.FoodRating;
 import com.example.diningreview.review.model.Review;
+import com.example.diningreview.review.model.ReviewStatus;
 import com.example.diningreview.review.repository.ReviewRepository;
 import com.example.diningreview.user.Role;
 import com.example.diningreview.user.User;
@@ -72,7 +73,7 @@ public class DatabaseLoader {
 
         //Review user1 restaurant1
         Review review = new Review(restaurant1, user1, "Nice food");
-
+        review.setReviewStatus(ReviewStatus.APPROVED);
         review.addFoodRating(new FoodRating(breadAndEgg, 3));
         review.addFoodRating(new FoodRating(porridge, 4));
         review.addFoodRating(new FoodRating(iceCream, 1));
@@ -90,9 +91,9 @@ public class DatabaseLoader {
 
         //user2 restaurant1
         review = new Review(restaurant1, user2, "Herh!!!");
-
+        review.setReviewStatus(ReviewStatus.APPROVED);
         review.addFoodRating(new FoodRating(breadAndEgg, 2));
-        review.addFoodRating(new FoodRating(porridge, 4));
+        review.addFoodRating(new FoodRating(porridge, 3));
         review.addFoodRating(new FoodRating(iceCream, 1));
 
         reviewRepo.save(review);

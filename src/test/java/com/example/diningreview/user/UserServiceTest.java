@@ -84,7 +84,10 @@ class UserServiceTest {
                 "city2", "state3", "1234", "password5");
 
 
-        Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
+        Mockito.when(foodRepo.findById(1L)).thenReturn(java.util.Optional.of(new Food("food1")));
+        Mockito.when(foodRepo.findById(2L)).thenReturn(java.util.Optional.of(new Food("food2")));
+        Mockito.when(foodRepo.findById(3L)).thenReturn(java.util.Optional.of(new Food("food3")));
+
         Mockito.when(userRepo.findByDisplayName(Mockito.any())).thenReturn(java.util.Optional.of(toBeSaved));
         //when
         underTest.updateUser(form, "User1");

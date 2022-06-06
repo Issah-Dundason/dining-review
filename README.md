@@ -31,6 +31,7 @@ A restaurant will also have an overall score, which will be the average across a
 
 | Method  | URL  | Uses Authentication  | Request Body| Response Body|
 |:-:|:-:|:-:|:-|:-|
+|POST|http://\<HOST\>\:\<PORT\>/public/login | ❎ | Login details | A json object with a token that can be used to access some parts of the app
 | POST  |http://\<HOST\>\:\<PORT\>/admin/food/save   | ✅  |A json object with the details of  a food|Returns the id of the saved food |
 | PUT  | http://\<HOST\>\:\<PORT\>/admin/food/{{id}}/update  | ✅  | A json object with the details of  a food|   |
 | POST  |  http://\<HOST\>\:\<PORT\>/admin/restaurant/save | ✅ | A json object with the details of a restaurant| Returns an object that contains the id of the saved restaurant|
@@ -42,9 +43,24 @@ A restaurant will also have an overall score, which will be the average across a
 | GET  | http://\<HOST\>\:\<PORT\>/user/{{display-name}}  | ✅  |   | Returns a json object with the supplied display name  |
 |POST   |http://\<HOST\>\:\<PORT\>/review/save | ✅  |  A json object with the details | Returns the saved review  |
 | PUT  |  http://\<HOST\>\:\<PORT\>/review/update | ✅ |A json object representing a review.    |   |
-| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the score(its rating on a scale of 1 - 5) and the number of users who took part in rating the food  |
+| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the approved score(its rating on a scale of 1 - 5) and the number of users who took part in rating the food  |
 
 ### Example
+Login details
+```
+   {
+    "displayName": "user1",
+    "password": "user1password"
+}
+```
+
+Login response 
+```
+ {
+    "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZG1pbiIsImlhdCI6MTY1NDU1Nzk4MCwicm9sZXMiOlsiQURNSU4iLCJVU0VSIl0sImV4cCI6MTY1NDU2MTU4MH0.M2PmS79ti3L2HL1fIKF36Ng9JkLPUamApV6AsC3knaySIW_Ly5f1PlkrFJlogbsJ"
+ }
+
+```
 
 Json Object to send when creating food or updating food
 ``` 

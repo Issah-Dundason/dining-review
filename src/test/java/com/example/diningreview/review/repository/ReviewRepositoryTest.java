@@ -2,9 +2,10 @@ package com.example.diningreview.review.repository;
 
 import com.example.diningreview.DatabaseLoader;
 import com.example.diningreview.food.FoodRepository;
+import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
 import com.example.diningreview.review.IRestaurantFoodScore;
-import com.example.diningreview.review.model.Review;
+import com.example.diningreview.review.model.ReviewStatus;
 import com.example.diningreview.user.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -40,14 +41,40 @@ class ReviewRepositoryTest {
 
 
     @Test
-    public void canGetFoodScoreForARestaurant() {
-        //when
-        List<Review> reviews = underTest.getReviewsByRestaurantId(databaseLoader.getRestaurantIds().get(0));
+    public void canGetFoodScoreByRestaurantAndStatus() {
+        long resId = databaseLoader.getRestaurantIds().get(1);
 
-        assertThat(reviews.size()).isGreaterThan(0);
+        Restaurant restaurant = restaurantRepo.findById(resId).get();
 
-        List<IRestaurantFoodScore> scores = underTest.getScoreByRestaurant(databaseLoader.getRestaurantIds().get(0));
+        List<IRestaurantFoodScore> score = underTest
+                .getScoreByRestaurantAndStatus(restaurant,
+                ReviewStatus.PENDING);
 
-        assertThat(scores.size()).isGreaterThan(0);
+        assertThat(score.size()).isGreaterThan(0);
+    }
+
+    @Test
+    public void canGetApprovedFoodScore() {
+        long resId = databaseLoader.getRestaurantIds().get(0);
+
+        Restaurant restaurant = restaurantRepo.findById(resId).get();
+
+        List<IRestaurantFoodScore> score = underTest.getScoreByRestaurantAndStatus(restaurant,
+                ReviewStatus.APPROVED);
+
+        score.forEach(s -> {
+            if(s.getName().equals("Bread & Egg")) {
+                assertThat(s.getScore()).isEqualTo(2);
+            }
+
+            if(s.getName().equals("Porridge")) {
+                assertThat(s.getScore()).isEqualTo(3);
+            }
+
+            if(s.getName().equals("Ice Cream")) {
+                assertThat(s.getScore()).isEqualTo(1);
+            }
+        });
+
     }
 }

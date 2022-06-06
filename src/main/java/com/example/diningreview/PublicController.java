@@ -3,6 +3,7 @@ package com.example.diningreview;
 import com.example.diningreview.food.Food;
 import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.review.IRestaurantFoodScore;
+import com.example.diningreview.review.model.ReviewStatus;
 import com.example.diningreview.review.repository.ReviewRepository;
 import com.example.diningreview.security.JwtTokenUtil;
 import com.example.diningreview.user.*;
@@ -17,10 +18,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/public")
 public class PublicController {
@@ -34,7 +38,8 @@ public class PublicController {
     @Autowired
     public PublicController(FoodRepository foodRepository,
                             RestaurantRepository restaurantRepository,
-                            UserService userService, ReviewRepository reviewRepo, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+                            UserService userService, ReviewRepository reviewRepo,
+                            AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
         this.foodRepository = foodRepository;
         this.restaurantRepository = restaurantRepository;
         this.userService = userService;
@@ -62,7 +67,13 @@ public class PublicController {
 
     @GetMapping("/restaurants/{id}/food-scores")
     public List<IRestaurantFoodScore> getRestaurantFoodScores(@PathVariable long id) {
-        return reviewRepo.getScoreByRestaurant(id);
+
+         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() ->
+                 new ResponseStatusException(
+                 HttpStatus.BAD_REQUEST
+         ));
+
+         return reviewRepo.getScoreByRestaurantAndStatus(restaurant, ReviewStatus.APPROVED);
     }
 
     @PostMapping("/login")

@@ -3,6 +3,7 @@ package com.example.diningreview.restaurant;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/admin/restaurant")
 public class RestaurantController {
