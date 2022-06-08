@@ -25,5 +25,6 @@ export const StyledForm = styled.div`
 
     .close_modal {
         margin: 12px 0;
+        cursor: pointer;
     }
 `;

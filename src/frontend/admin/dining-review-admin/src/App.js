@@ -1,4 +1,3 @@
-import react from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FoodsPage from "./components/regular/FoodsPage";
@@ -8,16 +7,12 @@ import RestaurantsPage from "./components/regular/RestaurantsPage";
 import { checkAndAssignToken, getAuthenticated } from "./features/auth/authSlice";
 
 
-
 function App() {
 
   const isAuthenticated = useSelector(getAuthenticated);
   const dispatch = useDispatch();
 
-  react.useEffect(() => {
-    checkAndAssignToken(isAuthenticated, dispatch);
-  }, []);
-
+  checkAndAssignToken(isAuthenticated, dispatch);
 
   if(!isAuthenticated) {
     return <LoginPage/>

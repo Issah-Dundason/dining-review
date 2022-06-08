@@ -33,6 +33,7 @@ export const StyledHeader = styled.header`
         justify-content: center;
         border-radius: 50%;
         margin-right: 36px;
+        cursor: pointer;
     }
 
     ul li {

@@ -11,6 +11,7 @@ export const StyledButton = styled.button`
 `
 
 export const StyledSkeumorphicBtn = styled.div`
+    cursor: pointer;
     border-radius: 15px;
     padding: 7px 9px;
     border: 1px solid #000207;

@@ -27,6 +27,12 @@ public class DataLoader {
     @Bean
     public CommandLineRunner createAdmin() {
         return args -> {
+            boolean exists = userRepo.existsByDisplayName("Admin");
+
+            if(exists) {
+                return;
+            }
+
             User user = new User();
             user.setPassword(encoder.encode("adminpassword"));
             user.setDisplayName("Admin");

@@ -9,7 +9,7 @@ export default function Dish(props) {
             </div>
             <div className="line"></div>
             <div className="buttons">
-                <div className="button">
+                <div className="button" onClick={props.onClick}>
                     <GrUpdate/>
                 </div>
                 <div className="button">

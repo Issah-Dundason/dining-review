@@ -14,7 +14,6 @@ export const saveFood = createAsyncThunk("review/save-food", async (food) => {
 });
 
 export const getSavedFoods = createAsyncThunk("review/foods", async () => {
-    console.log("Hello");
     const response = await axios.get("http://localhost:8080/public/foods");
     return response.data;
 });
@@ -28,7 +27,12 @@ const initialState = {
 
 export const foodSlice = createSlice({
     name: "foodSlice",
-    initialState, 
+    initialState,
+    reducers:{
+        updateSavingStatus: (state, action) => {
+            state.savingStatus = action.payload
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(getSavedFoods.pending, (state) => {
             state.fetchingFoodsStatus = "connecting";
@@ -52,6 +56,7 @@ export const foodSlice = createSlice({
     }
 })
 
+export const {updateSavingStatus} = foodSlice.actions;
 export const getDishes = (state) => state.food.dishes;
 export const getFetchingStatus = (state) => state.food.fetchingFoodsStatus;
 export const getSavingStatus = (state) => state.food.savingStatus;

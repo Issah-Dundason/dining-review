@@ -8,6 +8,7 @@ export const MainPage = styled.div`
     top: 56px;
     background-color: #fefefe;
     padding: 25px 12px 0 12px;
+    height: 100vh;
 
     .btn_box {
         display: flex;
