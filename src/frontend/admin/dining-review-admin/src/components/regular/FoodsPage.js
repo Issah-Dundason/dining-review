@@ -3,7 +3,7 @@ import { StyledForm } from "../styled/Styled.Form";
 import react from "react";
 import Modal from "react-modal/lib/components/Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { getDishes, getFetchingStatus, getSavedFoods, getSavingStatus, saveFood, updateSavingStatus } from "../../features/food/foodSlice";
+import { getDishes, getFetchingStatus, getSavedFoods, getSavingStatus, saveFood, updateFood, updateSavingStatus } from "../../features/food/foodSlice";
 import Dish from "./Dish";
 import LoadingIcon from "./LoadingIcon";
 import SkeumorphicBtn from "./SkeumorphicBtn";
@@ -34,7 +34,6 @@ export default function Food() {
     const dispatch = useDispatch();
     const [food, setFood] = react.useState({name: ''});
     const [modalPurpose, setModalPurpose] = react.useState("save");
-    const [dishId, setDishId] = react.useState(-1);
 
     react.useEffect(() => {
        if(dishesStatus === 'done') 
@@ -44,7 +43,6 @@ export default function Food() {
     }, []);
 
     function openForm() {
-        console.log("Clicked")
         setFormOpened(true);
     }
 
@@ -79,9 +77,10 @@ export default function Food() {
             </div>);
         }
 
-        return (<div className="food_container">
-        {createDishes()}
-    </div>);
+        return (
+            <div className="food_container">
+                {createDishes()}
+            </div>);
     }
 
     function clearModalContent() {
@@ -96,10 +95,13 @@ export default function Food() {
     }
 
     function onDishUpdate(dish) {
-        setDishId(dish.id);
-        setFood({name: dish.name});
+        setFood({...dish});
         setModalPurpose("update");
         openForm();
+    }
+
+    function update() {
+        dispatch(updateFood(food));
     }
 
     function saveNewFood() {
@@ -107,11 +109,21 @@ export default function Food() {
         openForm();
     }
 
-    function genereteModalActionBtn() {
+    function generateModalActionBtn() {
         if(modalPurpose === 'save') {
             return (<SkeumorphicBtn label="Save" onClick={createFood}/>);
         }
-        return (<SkeumorphicBtn label="update" />);
+        return (<SkeumorphicBtn label="update" onClick={update}/>);
+    }
+
+    function getModalStatus() {
+        if(savingStatus === 'Connecting')
+            return (<LoadingIcon/>);
+        if(savingStatus === 'done')
+            return (<MdDone color="white" fontSize="1.8em"/>);
+        if(savingStatus === 'failed')
+            return (<MdError color="white" fontSize="1.8em"/>);
+        return (<></>);
     }
 
     return (
@@ -140,12 +152,10 @@ export default function Food() {
                     </div>
                     <input placeholder="Name" onChange={changeFood} value={food.name} name="name"/>
                     <div className="saving_status">
-                           {savingStatus === 'connecting' ? <LoadingIcon/>: <></>}
-                           {savingStatus === 'done' ? <MdDone color="white" fontSize="1.8em"/> : <></>}
-                           {savingStatus === 'failed'? <MdError color="white" fontSize="1.8em"/> : <></>}
+                        {getModalStatus()}
                     </div>
                     <div className="btn_box">
-                        {genereteModalActionBtn()}
+                        {generateModalActionBtn()}
                     </div>
                 </StyledForm>
             </Modal>

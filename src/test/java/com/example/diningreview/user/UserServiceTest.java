@@ -2,6 +2,7 @@ package com.example.diningreview.user;
 
 import com.example.diningreview.food.Food;
 import com.example.diningreview.food.FoodRepository;
+import com.example.diningreview.security.CustomUserDetail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -26,7 +28,7 @@ class UserServiceTest {
 
     @BeforeEach
     public void setup() {
-        underTest = new UserService(userRepo, encoder, foodRepo);
+        underTest = new UserService(userRepo, encoder, foodRepo, new ModelMapper());
     }
 
     @Test
@@ -40,7 +42,6 @@ class UserServiceTest {
         Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
         //when
         underTest.saveUser(form);
-
         //then
         Mockito.verify(encoder).encode("password1");
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
@@ -105,24 +106,19 @@ class UserServiceTest {
     @Test
     public void onlyAdminCanGetAnyUserData() {
         //given
-        String adminDisplayName = "Admin";
         String displayName = "user1";
 
-        User admin = new User(adminDisplayName, "NONE",
+        User admin = new User("Admin", "NONE",
                 "NONE", "NONE", "password");
+         CustomUserDetail detail = new CustomUserDetail(admin);
         admin.setRoles(List.of(Role.ADMIN.name()));
 
         User user = new User();
 
-
-        Mockito.when(userRepo.findByDisplayName(adminDisplayName))
-                .thenReturn(Optional.of(admin));
         Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(user));
-        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
-
         //when
         //then
-        underTest.getUser(displayName, adminDisplayName);
+        underTest.getUser(displayName, detail);
     }
 
     @Test
@@ -130,35 +126,34 @@ class UserServiceTest {
         //given
         String getterName = "User1";
         User getter = new User();
+        getter.setDisplayName(getterName);
+        CustomUserDetail detail = new CustomUserDetail(getter);
+
         getter.setRoles(List.of(Role.USER.name()));
 
         String displayName = "User1";
 
         Mockito.when(userRepo.findByDisplayName(getterName))
                 .thenReturn(Optional.of(getter));
-        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
-        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
 
+        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
         //when then
-        underTest.getUser(displayName, getterName);
+        underTest.getUser(displayName, detail);
     }
 
     @Test
     public void userCanNotGetDataOfDifferentUser() {
         //given
-        String getterName = "User1";
         User getter = new User();
         getter.setRoles(List.of(Role.USER.name()));
 
+        CustomUserDetail detail = new CustomUserDetail(getter);
         String displayName = "User2";
 
-        Mockito.when(userRepo.findByDisplayName(getterName))
-                .thenReturn(Optional.of(getter));
         Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
-        Mockito.when(userRepo.existsByDisplayName(displayName)).thenReturn(true);
 
         //when//then
-        assertThatThrownBy(() -> underTest.getUser(displayName, getterName));
+        assertThatThrownBy(() -> underTest.getUser(displayName, detail));
 
     }
 }

@@ -19,7 +19,7 @@ public class UserController {
     @GetMapping("/user/{display-name}")
     public User getUser(@PathVariable(name = "display-name") String id,
                         @AuthenticationPrincipal UserDetails details) {
-        return service.getUser(id, details.getUsername());
+        return service.getUser(id, details);
     }
 
     @PutMapping("/user/update")

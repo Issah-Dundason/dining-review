@@ -1,5 +1,8 @@
 package com.example.diningreview.restaurant;
 
+import com.example.diningreview.exception.FoodNotFoundException;
+import com.example.diningreview.exception.RestaurantNotFoundException;
+import com.example.diningreview.exception.UnacceptableException;
 import com.example.diningreview.food.Food;
 import com.example.diningreview.food.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,10 @@ public class RestaurantService {
     }
 
     public Restaurant save(RestaurantForm form) {
-        boolean exists = restaurantRepo.existsByNameAndZipCode(form.getName(),
+        var exists = restaurantRepo.existsByNameAndZipCode(form.getName(),
                 form.getZipCode());
-        if(exists) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurant exists");
-        }
+
+        if(exists) throw new UnacceptableException();
 
         Restaurant restaurant = new Restaurant(
                 form.getName(),
@@ -44,17 +46,13 @@ public class RestaurantService {
     }
 
     public void update(long id, RestaurantForm form) {
-       boolean exists = restaurantRepo.existsByNameAndIdIsNotAndStateIsAndCityIs(form.getName(), id,
-                form.getState(), form.getCity());
-       if(exists) {
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                   "Restaurant with name exists!");
-       }
+        var exists = restaurantRepo.existsByNameAndIdIsNotAndStateIsAndCityIs(form.getName(), id,
+                        form.getState(), form.getCity());
 
-       Optional<Restaurant> optionalRestaurant = restaurantRepo.findById(id);
+        if(exists) throw new UnacceptableException();
 
-       Restaurant restaurant = optionalRestaurant.orElseThrow(() ->
-               new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        var restaurant = restaurantRepo.findById(id).orElseThrow(RestaurantNotFoundException::new);
+
 
         restaurant.setName(form.getName());
         restaurant.setCity(form.getCity());
@@ -72,11 +70,7 @@ public class RestaurantService {
         if(form.getFoodIds() == null) return;
 
         for(long foodId: form.getFoodIds()) {
-            Optional<Food> optionalFood = foodRepo.findById(foodId);
-            optionalFood.ifPresentOrElse(restaurant::addFood,
-                    () -> {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Food doesn't exist");
-                    });
+            foodRepo.findById(foodId).ifPresentOrElse(restaurant::addFood, FoodNotFoundException::new);
         }
     }
 

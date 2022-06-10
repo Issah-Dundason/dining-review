@@ -1,11 +1,10 @@
 package com.example.diningreview.food;
 
-import org.springframework.http.HttpStatus;
+import com.example.diningreview.exception.DisplayNameExistsException;
+import com.example.diningreview.exception.FoodNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -16,22 +15,17 @@ public class FoodService {
         this.foodRepo = foodRepo;
     }
 
-    public Food save(FoodForm form) {
+    public Food save(FoodForm form) throws DisplayNameExistsException {
         try {
-            Food food = new Food();
-            food.setName(form.getName());
+            Food food = new Food(form.getName());
             return foodRepo.save(food);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name already exist.");
+            throw new DisplayNameExistsException();
         }
     }
 
     public void update(long id, FoodForm form) {
-        Optional<Food> optionalFood = foodRepo.findById(id);
-        if(optionalFood.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        Food savedFood = optionalFood.get();
+        Food savedFood = foodRepo.findById(id).orElseThrow(FoodNotFoundException::new);
         savedFood.setName(form.getName());
         foodRepo.save(savedFood);
     }

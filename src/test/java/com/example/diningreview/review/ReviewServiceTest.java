@@ -1,5 +1,6 @@
 package com.example.diningreview.review;
 
+import com.example.diningreview.exception.RestaurantNotFoundException;
 import com.example.diningreview.food.FoodRepository;
 import com.example.diningreview.restaurant.Restaurant;
 import com.example.diningreview.restaurant.RestaurantRepository;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
@@ -50,15 +52,10 @@ class ReviewServiceTest {
 
         Mockito.when(restaurantRepo.findById(1l)).thenReturn(Optional.empty());
 
-        try {
-            //when
-            underTest.saveReview(form, "User1");
-        } catch (Exception e) {
-            //then
-            Mockito.verify(restaurantRepo).findById(1l);
-            Mockito.verify(userRepo, Mockito.never()).findByDisplayName(Mockito.any());
-        }
-    }
+        assertThatThrownBy(() -> underTest.saveReview(form, "User1"))
+                .isInstanceOf(RestaurantNotFoundException.class);
+
+   }
 
     @Test
     public void canUpdateTheStatusOfASavedUser() {

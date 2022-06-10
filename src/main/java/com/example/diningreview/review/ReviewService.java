@@ -1,5 +1,6 @@
 package com.example.diningreview.review;
 
+import com.example.diningreview.exception.*;
 import com.example.diningreview.food.Food;
 import com.example.diningreview.food.FoodRepository;
 import com.example.diningreview.restaurant.Restaurant;
@@ -39,15 +40,11 @@ public class ReviewService {
 
     public Review saveReview(ReviewForm form, String displayName) {
 
-        Optional<Restaurant> optionalRestaurant = restaurantRepo
-                .findById(form.getRestaurantId());
+        Restaurant restaurant = restaurantRepo
+                .findById(form.getRestaurantId()).orElseThrow(RestaurantNotFoundException::new);
 
-        if(optionalRestaurant.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+        User user = userRepo.findByDisplayName(displayName).orElseThrow(UserNotFoundException::new);
 
-        User user = userRepo.findByDisplayName(displayName).get();
-        Restaurant restaurant = optionalRestaurant.get();
         Review review = new Review(restaurant, user, form.getCommentary());
 
         addReviewRating(form, restaurant, review);
@@ -59,19 +56,13 @@ public class ReviewService {
     public void updateReview(ReviewForm form,
                              String updaterDisplayName) {
 
-        Optional<Restaurant> optionalRestaurant = restaurantRepo.findById(form.getRestaurantId());
-        User user = userRepo.findByDisplayName(updaterDisplayName).get();
+        User user = userRepo.findByDisplayName(updaterDisplayName).orElseThrow(UserExistsException::new);
 
+        Restaurant restaurant = restaurantRepo.findById(form.getRestaurantId())
+                .orElseThrow(RestaurantNotFoundException::new);
 
-        Restaurant restaurant = optionalRestaurant.orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Restaurant doesn't exist"));
-
-        Optional<Review> optionalReview = reviewRepo.findByRestaurantAndUser(restaurant, user);
-
-        Review review = optionalReview.orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Review does not exist!"));
+        Review review = reviewRepo.findByRestaurantAndUser(restaurant, user)
+                .orElseThrow(ReviewNotFoundException::new);
 
         review.setCommentary(form.getCommentary());
         foodRatingRepo.deleteAllByReview(review);
@@ -85,23 +76,20 @@ public class ReviewService {
         form.getFoodRatings().forEach(ratingForm -> {
             boolean foodAvailableAtRestaurant = restaurantRepo.restaurantHasFood(ratingForm.getFoodId()
                     , restaurant.getId());
-            if(!foodAvailableAtRestaurant) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        String.format("Restaurant doesn't have food with id %d", ratingForm.getFoodId()));
-            }
-            Food food = foodRepo.findById(ratingForm.getFoodId()).get();
+            if(!foodAvailableAtRestaurant) throw new UnacceptableException();
+            Food food = foodRepo.findById(ratingForm.getFoodId()).orElseThrow(FoodNotFoundException::new);
             review.addFoodRating(new FoodRating(food, ratingForm.getRate()));
         });
     }
 
     public void changeReviewStatus(ReviewStatusUpdateForm form) {
 
-        User user = userRepo.findByDisplayName(form.getUserDisplayName()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
-        Restaurant restaurant = restaurantRepo.findById(form.getRestaurantId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant does not exist"));
-        Review review = reviewRepo.findByRestaurantAndUser(restaurant, user).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Review does not exist"));
+        User user = userRepo.findByDisplayName(form.getUserDisplayName())
+                .orElseThrow(UserNotFoundException::new);
+        Restaurant restaurant = restaurantRepo.findById(form.getRestaurantId())
+                .orElseThrow(RestaurantNotFoundException::new);
+        Review review = reviewRepo.findByRestaurantAndUser(restaurant, user)
+                .orElseThrow(ReviewNotFoundException::new);
 
         if(form.getStatus() < 0 || form.getStatus() > ReviewStatus.values().length) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

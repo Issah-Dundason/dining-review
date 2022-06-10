@@ -18,6 +18,15 @@ export const getSavedFoods = createAsyncThunk("review/foods", async () => {
     return response.data;
 });
 
+export const updateFood = createAsyncThunk("review/update-food", async(data) => {
+    let token = localStorage.getItem("token");
+    const id = data.id;
+    await  axios.put(`http://localhost:8080/admin/food/${id}/update`, data,  {
+        headers: {
+            Authorization: `Bearer ${token}`
+        } });
+});
+
 const initialState = {
     dishes: [],
     fetchingFoodsStatus: '',
@@ -52,6 +61,15 @@ export const foodSlice = createSlice({
         .addCase(getSavedFoods.fulfilled, (state, action) => {
             state.fetchingFoodsStatus = 'done'
             state.dishes = action.payload;
+        })
+        .addCase(updateFood.pending, (state) => {
+            state.savingStatus = 'connecting';
+        })
+        .addCase(updateFood.rejected, (state) => {
+            state.savingStatus = 'failed';
+        })
+        .addCase(updateFood.fulfilled, (state) => {
+            state.savingStatus = 'done'
         })
     }
 })
