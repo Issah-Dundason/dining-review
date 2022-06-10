@@ -51,7 +51,8 @@ public class RestaurantService {
 
         if(exists) throw new UnacceptableException();
 
-        var restaurant = restaurantRepo.findById(id).orElseThrow(RestaurantNotFoundException::new);
+        var restaurant = restaurantRepo.findById(id)
+                .orElseThrow(RestaurantNotFoundException::new);
 
 
         restaurant.setName(form.getName());
@@ -59,7 +60,8 @@ public class RestaurantService {
         restaurant.setZipCode(form.getZipCode());
         restaurant.setState(form.getState());
 
-        restaurant.getAvailableFood().removeAll(restaurant.getAvailableFood());
+        restaurant.getAvailableFood()
+                .removeAll(restaurant.getAvailableFood());
 
         addFood(form, restaurant);
 

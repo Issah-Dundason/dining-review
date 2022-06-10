@@ -43,7 +43,6 @@ class UserServiceTest {
         //when
         underTest.saveUser(form);
         //then
-        Mockito.verify(encoder).encode("password1");
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(userRepo).save(argumentCaptor.capture());
         User savedUser = argumentCaptor.getValue();
@@ -94,7 +93,6 @@ class UserServiceTest {
         underTest.updateUser(form, "User1");
         //then
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        Mockito.verify(userRepo).findByDisplayName(Mockito.any());
         Mockito.verify(userRepo).save(captor.capture());
         User user = captor.getValue();
         assertThat(user.getCity()).isEqualTo(form.getCity());

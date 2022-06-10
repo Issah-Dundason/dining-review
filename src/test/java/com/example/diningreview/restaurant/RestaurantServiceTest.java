@@ -76,8 +76,6 @@ class RestaurantServiceTest {
         //when
         underTest.update(1l, form);
         //then
-        Mockito.verify(restaurantRepo).findById(1l);
-        Mockito.verify(foodRepo).findById(1l);
         ArgumentCaptor<Restaurant> captor = ArgumentCaptor.forClass(Restaurant.class);
         Mockito.verify(restaurantRepo).save(captor.capture());
         Restaurant restaurant = captor.getValue();

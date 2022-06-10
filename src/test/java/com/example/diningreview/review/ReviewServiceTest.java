@@ -69,7 +69,7 @@ class ReviewServiceTest {
         form.setRestaurantId(1);
         form.setUserDisplayName(user.getDisplayName());
 
-        Mockito.when(restaurantRepo.findById(1l)).thenReturn(Optional.of(restaurant));
+        Mockito.when(restaurantRepo.findById(1L)).thenReturn(Optional.of(restaurant));
         Mockito.when(userRepo.findByDisplayName(user.getDisplayName())).thenReturn(Optional.of(user));
         Mockito.when(reviewRepo.findByRestaurantAndUser(restaurant, user)).thenReturn(Optional.of(review));
         //when
