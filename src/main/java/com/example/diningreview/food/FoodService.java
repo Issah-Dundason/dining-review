@@ -29,4 +29,9 @@ public class FoodService {
         savedFood.setName(form.getName());
         foodRepo.save(savedFood);
     }
+
+    public void delete(long id) {
+        var food = foodRepo.findById(id).orElseThrow(FoodNotFoundException::new);
+        foodRepo.delete(food);
+    }
 }
