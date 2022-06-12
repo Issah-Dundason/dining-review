@@ -44,9 +44,10 @@ class FoodServiceTest {
 
         FoodForm form = new FoodForm("Food2");
 
-        Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(Optional.of(old));
+        Mockito.when(foodRepo.findById(1L))
+                .thenReturn(Optional.of(old));
         //when
-        underTest.update(1l, form);
+        underTest.update(1L, form);
         //then
         ArgumentCaptor<Food> captor = ArgumentCaptor.forClass(Food.class);
         Mockito.verify(foodRepo).save(captor.capture());
@@ -58,10 +59,11 @@ class FoodServiceTest {
     public void canNotUpdateNonExistentFood() {
         //given
         FoodForm form = new FoodForm("Food1");
-        Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(foodRepo.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
         //when
         //then
-        assertThatThrownBy(() -> underTest.update(1l, form));
+        assertThatThrownBy(() -> underTest.update(1L, form));
     }
 
 }

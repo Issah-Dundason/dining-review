@@ -28,7 +28,8 @@ class UserServiceTest {
 
     @BeforeEach
     public void setup() {
-        underTest = new UserService(userRepo, encoder, foodRepo, new ModelMapper());
+        underTest = new UserService(userRepo,
+                encoder, foodRepo, new ModelMapper());
     }
 
     @Test
@@ -101,43 +102,6 @@ class UserServiceTest {
         assertThat(user.getInterestedFoods().size()).isEqualTo(3);
     }
 
-    @Test
-    public void onlyAdminCanGetAnyUserData() {
-        //given
-        String displayName = "user1";
-
-        User admin = new User("Admin", "NONE",
-                "NONE", "NONE", "password");
-         CustomUserDetail detail = new CustomUserDetail(admin);
-        admin.setRoles(List.of(Role.ADMIN.name()));
-
-        User user = new User();
-
-        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(user));
-        //when
-        //then
-        underTest.getUser(displayName, detail);
-    }
-
-    @Test
-    public void aUserCanGetOnlyOwnedData() {
-        //given
-        String getterName = "User1";
-        User getter = new User();
-        getter.setDisplayName(getterName);
-        CustomUserDetail detail = new CustomUserDetail(getter);
-
-        getter.setRoles(List.of(Role.USER.name()));
-
-        String displayName = "User1";
-
-        Mockito.when(userRepo.findByDisplayName(getterName))
-                .thenReturn(Optional.of(getter));
-
-        Mockito.when(userRepo.findByDisplayName(displayName)).thenReturn(Optional.of(new User()));
-        //when then
-        underTest.getUser(displayName, detail);
-    }
 
     @Test
     public void userCanNotGetDataOfDifferentUser() {

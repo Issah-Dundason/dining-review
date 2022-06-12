@@ -3,6 +3,7 @@ package com.example.diningreview.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,15 +13,14 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository underTest;
 
+    @Sql("/test-db.sql")
     @Test
     void canCheckIfUserWithADisplayNameExists() {
         //given
         var nonTakenDisplayName = "any";
-        User user = new User("UserForExists",
-                "city1", "state1", "1234", "password1");
-        underTest.save(user);
+        var displayNameOfExistingUser = "User1";
         //when
-        boolean exists1 = underTest.existsByDisplayName(user.getDisplayName());
+        boolean exists1 = underTest.existsByDisplayName(displayNameOfExistingUser);
         boolean exists2 = underTest.existsByDisplayName(nonTakenDisplayName);
         boolean exists3 = underTest.existsByDisplayName(null);
         //then
