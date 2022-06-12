@@ -41,7 +41,7 @@ public class Review {
 
     public void addFoodRating(FoodRating foodRating) {
         foodRating.setReview(this);
-        foodRatings.add(foodRating);
+        this.foodRatings.add(foodRating);
     }
 
     public Review(Restaurant restaurant, User user, String commentary) {

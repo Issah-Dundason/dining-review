@@ -15,37 +15,37 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "USERS")
 public class User {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     @GeneratedValue
     private Long id;
 
 
-    @Column(name = "display_name", unique = true, nullable = false)
+    @Column(name = "DISPLAY_NAME", unique = true, nullable = false)
     private String displayName;
 
 
-    @Column(name = "city")
+    @Column(name = "CITY")
     private String city;
 
 
-    @Column(name = "state")
+    @Column(name = "STATE")
     private String state;
 
-    @Column(name = "zip_code")
+    @Column(name = "ZIP_CODE")
     private String zipCode;
 
 
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
     @ManyToMany
-    @JoinTable(name = "user_foods",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id", referencedColumnName = "id"))
+    @JoinTable(name = "USER_FOODS",
+            joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "FOOD_ID", referencedColumnName = "ID"))
     private Set<Food> interestedFoods = new HashSet<>();
 
     public void addFood(Food food) {
@@ -58,10 +58,12 @@ public class User {
 
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "roles")
+    @CollectionTable(name = "ROLES")
     private List<String> roles = new ArrayList<>();
 
-    public User(String displayName, String city, String state, String zipCode, String password) {
+    public User(String displayName,
+                String city, String state,
+                String zipCode, String password) {
         this.displayName = displayName;
         this.city = city;
         this.state = state;

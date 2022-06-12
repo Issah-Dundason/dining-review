@@ -89,7 +89,7 @@ Json Object to send when creating a review or updating a review
 {
   "commentary": "Comment",
   "restaurantId": 3,
-  "foodRatings" : [
+  "foodRating" : [
 	{
 	   "rate": 3,
         "foodId": 2

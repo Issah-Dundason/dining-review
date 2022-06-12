@@ -75,7 +75,8 @@ public class UserService {
 
     public User getUser(String displayName, UserDetails principal) {
 
-        User user = userRepo.findByDisplayName(displayName).orElseThrow(UserNotFoundException::new);
+        User user = userRepo.findByDisplayName(displayName)
+                .orElseThrow(UserNotFoundException::new);
 
         var roles = principal.getAuthorities()
                 .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());

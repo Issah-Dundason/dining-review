@@ -1,67 +1,53 @@
 package com.example.diningreview.review.repository;
 
-import com.example.diningreview.DatabaseLoader;
-import com.example.diningreview.food.FoodRepository;
-import com.example.diningreview.restaurant.Restaurant;
+import com.example.diningreview.exception.RestaurantNotFoundException;
 import com.example.diningreview.restaurant.RestaurantRepository;
 import com.example.diningreview.review.IRestaurantFoodScore;
 import com.example.diningreview.review.model.ReviewStatus;
-import com.example.diningreview.user.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ReviewRepositoryTest {
-
-    @Autowired private UserRepository userRepo;
-    @Autowired private FoodRepository foodRepo;
-    @Autowired private RestaurantRepository restaurantRepo;
-    @Autowired private ReviewRepository reviewRepo;
-
 
     @Autowired
     private ReviewRepository underTest;
 
-    DatabaseLoader databaseLoader;
+    @Autowired
+    private RestaurantRepository restaurantRepo;
 
-    @BeforeAll
-    public void setup() {
-        databaseLoader = new DatabaseLoader(userRepo,
-                foodRepo, restaurantRepo, reviewRepo);
-        databaseLoader.loadDatabase();
-    }
-
-
+    @Sql(scripts = "/test-db.sql")
     @Test
-    public void canGetFoodScoreByRestaurantAndStatus() {
-        long resId = databaseLoader.getRestaurantIds().get(1);
+    public void canGetPendingFoodScoresForARestaurant() {
+        var restaurant = restaurantRepo.findById(2L)
+                .orElseThrow(RestaurantNotFoundException::new);
 
-        Restaurant restaurant = restaurantRepo.findById(resId).get();
-
-        List<IRestaurantFoodScore> score = underTest
+        List<IRestaurantFoodScore> scores = underTest
                 .getScoreByRestaurantAndStatus(restaurant,
                 ReviewStatus.PENDING);
 
-        assertThat(score.size()).isGreaterThan(0);
+        assertThat(scores.size()).isEqualTo(3);
     }
 
+    @Sql(scripts = "/test-db.sql")
     @Test
-    public void canGetApprovedFoodScore() {
-        long resId = databaseLoader.getRestaurantIds().get(0);
+    public void canGetAPProvedFoodScoresForARestaurant() {
+        //given
+        var restaurant = restaurantRepo.findById(1L)
+                .orElseThrow(RestaurantNotFoundException::new);
 
-        Restaurant restaurant = restaurantRepo.findById(resId).get();
-
-        List<IRestaurantFoodScore> score = underTest.getScoreByRestaurantAndStatus(restaurant,
+        //when
+        List<IRestaurantFoodScore> score = underTest
+                .getScoreByRestaurantAndStatus(restaurant,
                 ReviewStatus.APPROVED);
 
+        //then
         score.forEach(s -> {
             if(s.getName().equals("Bread & Egg")) {
                 assertThat(s.getScore()).isEqualTo(2);
@@ -71,7 +57,7 @@ class ReviewRepositoryTest {
                 assertThat(s.getScore()).isEqualTo(3);
             }
 
-            if(s.getName().equals("Ice Cream")) {
+            if(s.getName().equals("Tom brown")) {
                 assertThat(s.getScore()).isEqualTo(1);
             }
         });
