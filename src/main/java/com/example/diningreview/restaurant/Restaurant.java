@@ -12,31 +12,31 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor(force = true)
-@Table(name = "restaurants")
+@Table(name = "RESTAURANTS")
 public class Restaurant {
 
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "NAME", unique = true)
     private String name;
 
-    @Column(name = "zip_code")
+    @Column(name = "ZIP_CODE")
     private String zipCode;
 
-    @Column(name = "city")
+    @Column(name = "CITY")
     private String city;
 
-    @Column(name = "state")
+    @Column(name = "STATE")
     private String state;
 
 
     @ManyToMany
-    @JoinTable(name = "restaurant_foods",
-            joinColumns = @JoinColumn(name = "restaurant_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id", referencedColumnName = "id")
+    @JoinTable(name = "RESTAURANT_FOODS",
+            joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "FOOD_ID", referencedColumnName = "ID")
     )
     List<Food> availableFood = new ArrayList<>();
 

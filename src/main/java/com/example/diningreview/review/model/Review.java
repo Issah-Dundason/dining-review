@@ -14,24 +14,24 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor(force = true)
-@Table(name = "reviews")
+@Table(name = "REVIEWS")
 @IdClass(ReviewId.class)
 public class Review {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
+    @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "ID")
     private Restaurant restaurant;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
 
-    @Column(name = "commentary")
+    @Column(name = "COMMENTARY")
     private String commentary;
 
-    @Column(name = "status")
+    @Column(name = "STATUS")
     @Enumerated
     private ReviewStatus reviewStatus = ReviewStatus.PENDING;
 

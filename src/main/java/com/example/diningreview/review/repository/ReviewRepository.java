@@ -19,7 +19,7 @@ public interface ReviewRepository extends CrudRepository<Review, ReviewId> {
     void deleteByRestaurantAndUser(Restaurant restaurant, User user);
 
     @Query(
-           "SELECT fd.name as name, AVG(fr.rate) as score, COUNT(fr.rate) as count " +
+           "SELECT fd.name as name, AVG(fr.rating) as score, COUNT(fr.rating) as count " +
            "FROM FoodRating fr " +
            "JOIN fr.review rv JOIN fr.food fd " +
            "WHERE rv.restaurant = ?1 " +

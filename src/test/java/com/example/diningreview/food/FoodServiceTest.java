@@ -1,5 +1,6 @@
 package com.example.diningreview.food;
 
+import com.example.diningreview.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,4 +64,5 @@ class FoodServiceTest {
         //then
         assertThatThrownBy(() -> underTest.update(1l, form));
     }
+
 }

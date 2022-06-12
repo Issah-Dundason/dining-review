@@ -8,15 +8,15 @@ import javax.persistence.*;
 @Data
 @Entity
 @NoArgsConstructor(force = true)
-@Table(name = "foods")
+@Table(name = "FOODS")
 public class Food {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     @GeneratedValue
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "NAME", unique = true)
     private String name;
 
     public Food(String name) {

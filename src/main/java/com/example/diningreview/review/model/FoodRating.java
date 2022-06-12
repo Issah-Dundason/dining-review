@@ -10,14 +10,14 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "food_rating")
+@Table(name = "FOOD_RATINGS")
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class FoodRating {
 
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
     @ManyToOne
@@ -26,17 +26,17 @@ public class FoodRating {
     @JsonIgnore
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "restaurant_id"),
-            @JoinColumn(name = "user_id")
+            @JoinColumn(name = "RESTAURANT_ID"),
+            @JoinColumn(name = "USER_ID")
     })
     private Review review;
 
 
-    @Column(name = "rate")
-    private Integer rate;
+    @Column(name = "RATING")
+    private Integer rating;
 
-    public FoodRating(Food food, Integer rate) {
+    public FoodRating(Food food, Integer rating) {
         this.food = food;
-        this.rate = rate;
+        this.rating = rating;
     }
 }

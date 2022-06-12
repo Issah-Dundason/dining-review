@@ -39,11 +39,6 @@ class ReviewServiceTest {
     }
 
     @Test
-    public void canSaveReview() {
-
-    }
-
-    @Test
     public void canNotSaveReviewWithoutRestaurant() {
         //given
         ReviewForm form = new ReviewForm();

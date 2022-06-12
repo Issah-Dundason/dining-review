@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -78,7 +77,7 @@ public class ReviewService {
                     , restaurant.getId());
             if(!foodAvailableAtRestaurant) throw new UnacceptableException();
             Food food = foodRepo.findById(ratingForm.getFoodId()).orElseThrow(FoodNotFoundException::new);
-            review.addFoodRating(new FoodRating(food, ratingForm.getRate()));
+            review.addFoodRating(new FoodRating(food, ratingForm.getRating()));
         });
     }
 
