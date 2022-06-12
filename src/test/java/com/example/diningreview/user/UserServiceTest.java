@@ -40,17 +40,26 @@ class UserServiceTest {
                 new Long[]{1L, 2L, 3L}
         );
 
-        Mockito.when(foodRepo.findById(Mockito.any())).thenReturn(java.util.Optional.of(new Food()));
+        Mockito.when(foodRepo.findById(1L))
+                .thenReturn(java.util.Optional.of(new Food("Food1")));
+        Mockito.when(foodRepo.findById(2L))
+                .thenReturn(java.util.Optional.of(new Food("Food2")));
+        Mockito.when(foodRepo.findById(3L))
+                .thenReturn(java.util.Optional.of(new Food("Food3")));
+        Mockito.when(encoder.encode(form.getPassword())).thenReturn("encodedPassword");
+
         //when
         underTest.saveUser(form);
+
         //then
         ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(userRepo).save(argumentCaptor.capture());
         User savedUser = argumentCaptor.getValue();
-        assertThat(savedUser.getDisplayName()).isEqualTo(form.getDisplayName());
-        assertThat(savedUser.getPassword()).isEqualTo(encoder.encode("password1"));
-        assertThat(savedUser.getRoles()).asList().contains(Role.USER.name());
-        Mockito.verify(foodRepo).findById(1L);
+
+        assertThat(savedUser).extracting(User::getDisplayName,
+                User::getPassword, user -> user.getInterestedFoods().size(),
+                user -> user.getRoles().contains(Role.USER.name()))
+                .containsExactly(form.getDisplayName(), "encodedPassword", 3, true);
     }
 
     @Test
