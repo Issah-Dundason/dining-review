@@ -1,4 +1,5 @@
-import {GrUpdate, GrClose} from "react-icons/gr";
+import {GrClose} from "react-icons/gr";
+import {TiPen} from "react-icons/ti"
 
 export default function Dish(props) {
     return (
@@ -9,10 +10,10 @@ export default function Dish(props) {
             </div>
             <div className="line"></div>
             <div className="buttons">
-                <div className="button" onClick={props.onClick}>
-                    <GrUpdate/>
+                <div className="button" onClick={props.onUpdate}>
+                    <TiPen/>
                 </div>
-                <div className="button">
+                <div className="button" onClick={props.onDelete}>
                     <GrClose/>
                 </div>
             </div>

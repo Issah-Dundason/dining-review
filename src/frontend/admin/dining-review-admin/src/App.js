@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FoodsPage from "./components/regular/FoodsPage";
@@ -22,7 +23,7 @@ function App() {
     <BrowserRouter>
 
       <Header/>
-
+      <Toaster/>
       <Routes>
         <Route path="/" element={<RestaurantsPage/>}/>
         <Route path="/food" element={<FoodsPage/>} />

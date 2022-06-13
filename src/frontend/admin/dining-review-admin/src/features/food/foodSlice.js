@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
 export const saveFood = createAsyncThunk("review/save-food", async (food) => {
     let token = localStorage.getItem("token");
 
@@ -27,11 +26,18 @@ export const updateFood = createAsyncThunk("review/update-food", async(data) => 
         } });
 });
 
+export const deleteFood = async(id) => {
+    let token = localStorage.getItem("token");
+    await axios.delete(`http://localhost:8080/admin/food/${id}/delete`,{
+        headers: {
+            Authorization: `Bearer ${token}`
+        } });
+}
+
 const initialState = {
     dishes: [],
     fetchingFoodsStatus: '',
     savingStatus: '',
-    deletingStatus: ''
 }
 
 export const foodSlice = createSlice({

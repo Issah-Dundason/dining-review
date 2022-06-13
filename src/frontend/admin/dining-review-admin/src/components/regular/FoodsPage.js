@@ -3,11 +3,12 @@ import { StyledForm } from "../styled/Styled.Form";
 import react from "react";
 import Modal from "react-modal/lib/components/Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { getDishes, getFetchingStatus, getSavedFoods, getSavingStatus, saveFood, updateFood, updateSavingStatus } from "../../features/food/foodSlice";
+import { deleteFood, getDishes, getFetchingStatus, getSavedFoods, getSavingStatus, saveFood, updateFood, updateSavingStatus } from "../../features/food/foodSlice";
 import Dish from "./Dish";
 import LoadingIcon from "./LoadingIcon";
 import SkeumorphicBtn from "./SkeumorphicBtn";
 import {MdClose, MdDone, MdError, MdRestaurantMenu} from "react-icons/md"
+import toast from "react-hot-toast";
 
 
 const customStyle = {
@@ -90,7 +91,10 @@ export default function Food() {
 
     function createDishes() {
         return dishes.map((dish, i) => (
-            <Dish key={i} data={dish} onClick={() => onDishUpdate(dish)}/>
+            <Dish key={i} data={dish} 
+            onUpdate={() => onDishUpdate(dish)}
+            onDelete={() => deleteDishWithId(dish.id)}
+            />
         ));
     }
 
@@ -124,6 +128,17 @@ export default function Food() {
         if(savingStatus === 'failed')
             return (<MdError color="white" fontSize="1.8em"/>);
         return (<></>);
+    }
+
+    function deleteDishWithId(id) {
+        toast
+        .promise(deleteFood(id), {
+            loading: 'Deleting',
+            success: `Successfully deleted food #${id}`,
+            error: 'Could not delete'
+        }, {
+            style: {minWidth: '250px'}
+        })
     }
 
     return (

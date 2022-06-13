@@ -31,19 +31,19 @@ A restaurant will also have an overall score, which will be the average across a
 
 | Method  | URL  | Uses Authentication  | Request Body| Response Body|
 |:-:|:-:|:-:|:-|:-|
-|POST|http://\<HOST\>\:\<PORT\>/public/login | ❎ | Login details | A json object with a token that can be used to access some parts of the app
-| POST  |http://\<HOST\>\:\<PORT\>/admin/food/save   | ✅  |A json object with the details of  a food|Returns the id of the saved food |
-| PUT  | http://\<HOST\>\:\<PORT\>/admin/food/{{id}}/update  | ✅  | A json object with the details of  a food|   |
-| POST  |  http://\<HOST\>\:\<PORT\>/admin/restaurant/save | ✅ | A json object with the details of a restaurant| Returns an object that contains the id of the saved restaurant|
-| PUT |http://\<HOST\>\:\<PORT\>/admin/restaurant/{{id}}/update   | ✅  | A json object with the details of a restaurant|   |
-|  GET |http://\<HOST\>\:\<PORT\>/public/foods| ❎  |   | Returns a list of food in the system  |
-| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants  | ❎  |   | Returns a list of restaurants in the system  |
-|  POST | http://\<HOST\>\:\<PORT\>/public/register | ❎  | A json object with the details of a user  | Returns an object that contains the id and display name of the saved user  |
-| PUT  |  http://\<HOST\>\:\<PORT\>/user/update | ✅  | A json object with the details of a user  |   |
-| GET  | http://\<HOST\>\:\<PORT\>/user/{{display-name}}  | ✅  |   | Returns a json object with the supplied display name  |
-|POST   |http://\<HOST\>\:\<PORT\>/review/save | ✅  |  A json object with the details | Returns the saved review  |
-| PUT  |  http://\<HOST\>\:\<PORT\>/review/update | ✅ |A json object representing a review.    |   |
-| GET  | http://\<HOST\>\:\<PORT\>/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the approved score(its rating on a scale of 1 - 5) and the number of users who took part in rating the food  |
+|POST|/public/login | ❎ | Login details | A json object with a token that can be used to access some parts of the app
+| POST  |/admin/food/save   | ✅  |A json object with the details of  a food|Returns the id of the saved food |
+| PUT  |/admin/food/{{id}}/update  | ✅  | A json object with the details of  a food|   |
+| POST  |/admin/restaurant/save | ✅ | A json object with the details of a restaurant| Returns an object that contains the id of the saved restaurant|
+| PUT |/admin/restaurant/{{id}}/update   | ✅  | A json object with the details of a restaurant|   |
+|  GET |/public/foods| ❎  |   | Returns a list of food in the system  |
+| GET  |/public/restaurants  | ❎  |   | Returns a list of restaurants in the system  |
+|  POST |/public/register | ❎  | A json object with the details of a user  | Returns an object that contains the id and display name of the saved user  |
+| PUT  |/user/update | ✅  | A json object with the details of a user  |   |
+| GET  |/user/{{display-name}}  | ✅  |   | Returns a json object with the supplied display name  |
+|POST   |/review/save | ✅  |  A json object with the details | Returns the saved review  |
+| PUT  |/review/update | ✅ |A json object representing a review.    |   |
+| GET  |/public/restaurants/{{id}}/food-scores  | ❎  |   | Returns a list of objects.Each object has the name of a food served by the restaurant, the approved score(its rating on a scale of 1 - 5) and the number of users who took part in rating the food  |
 
 ### Example
 Login details
